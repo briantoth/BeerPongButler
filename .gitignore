@@ -9,3 +9,5 @@ hw2p3
 tutorialROSOpenCV
 perception/bin
 perception/build/
+tabletop_object_detector_brian/bin
+tabletop_object_detector_brian/build/

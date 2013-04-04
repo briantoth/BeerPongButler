@@ -1,17 +1,15 @@
 <package>
-  <description brief="pr2_pick_and_place_tutorial">
+  <description brief="perception">
 
-     pr2_pick_and_place_tutorial
+     perception
 
   </description>
   <author>brian</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_pick_and_place_tutorial</url>
-  <depend package="actionlib"/>
-  <depend package="object_manipulation_msgs"/>
-  <depend package="tabletop_object_detector"/>
-  <depend package="tabletop_collision_map_processing"/>
+  <depend package="tabletop_object_detector_brian"/>
+  <depend package="sensor_msgs"/>
 
 </package>
 
