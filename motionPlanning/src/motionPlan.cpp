@@ -4,7 +4,7 @@
 #include <arm_navigation_msgs/MoveArmAction.h>
 #include <arm_navigation_msgs/utils.h>
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
   ros::init (argc, argv, "move_arm_pose_goal_test");
   ros::NodeHandle nh;
   actionlib::SimpleActionClient<arm_navigation_msgs::MoveArmAction> move_arm("move_right_arm",true);
@@ -21,9 +21,9 @@ int main(int argc, char **argv){
   arm_navigation_msgs::SimplePoseConstraint desired_pose;
   desired_pose.header.frame_id = "torso_lift_link";
   desired_pose.link_name = "r_wrist_roll_link";
-  desired_pose.pose.position.x = 0;
-  desired_pose.pose.position.y = -0.7;
-  desired_pose.pose.position.z = 1.2;
+  desired_pose.pose.position.x = 0.75;
+  desired_pose.pose.position.y = -0.188;
+  desired_pose.pose.position.z = 0;
 
   desired_pose.pose.orientation.x = 0.0;
   desired_pose.pose.orientation.y = 0.0;

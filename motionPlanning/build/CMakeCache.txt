@@ -189,7 +189,7 @@ TOOLCHAINCONFIG:FILEPATH=TOOLCHAINCONFIG-NOTFOUND
 USERCONFIG:FILEPATH=USERCONFIG-NOTFOUND
 
 //Path to a file.
-_file_name:FILEPATH=/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/motionPlan.cpp
+_file_name:FILEPATH=/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/motionPlan_simple.cpp
 
 //Value Computed by CMake
 motionPlanning_BINARY_DIR:STATIC=/home/kimberly/fuerte_workspace/sandbox/motionPlanning/build

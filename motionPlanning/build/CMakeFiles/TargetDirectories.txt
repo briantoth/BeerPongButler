@@ -17,6 +17,7 @@
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/get_state_validity_virtual_attached_object.dir
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/get_state_validity_virtual_object.dir
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/motionPlan.dir
+/home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/motionPlan_simple.dir
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/move_arm_joint_goal.dir
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/move_arm_path_constraints.dir
 /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/move_arm_pose_goal.dir

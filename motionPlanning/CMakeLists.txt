@@ -48,3 +48,4 @@ rosbuild_add_executable(display_trajectory_tutorial src/display_trajectory_tutor
 rosbuild_add_executable(add_cylinder src/addCylinder.cpp)
 rosbuild_add_executable(attach_cylinder src/attachCylinder.cpp)
 rosbuild_add_executable(motionPlan src/motionPlan.cpp)
+rosbuild_add_executable(motionPlan_simple src/motionPlan_simple.cpp)
