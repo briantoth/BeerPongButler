@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('tutorialROSOpenCV')
+roslib.load_manifest('detectCups')
 import sys
 import rospy
 import cv2.cv as cv
@@ -21,113 +21,88 @@ class image_converter:
     #self.image_sub = rospy.Subscriber("camera/image_raw",Image,self.callback)
 
   def callback(self,data):
-    #try:
-      #cv_image_color = self.bridge.imgmsg_to_cv(data, "bgr8")
-    #except CvBridgeError, e:
-      #print e
 
-    cv_image_color= cv2.imread("frame0027.jpg")
-    #print(cv_image_color)
-
-    #this is dumb but w/e; switch to a numpy array for processing
-    #cv_image_color= np.asarray(cv_image_color[:,:])
+    cv_image_color= cv2.imread("frame0019.jpg")
 
     #switch to greyscale
     cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
     #print cv_image_color
 
-    m,n= cv_image.shape
-    #print cv_image.shape
+    width,height= cv_image.shape
 
-    ##try thresholding
-    #cv_image= cv2.threshold(cv_image, 160, 255, cv2.THRESH_BINARY)[1]
+    #try a bunch of different parameters
 
-    ##try blurring
-    #cv_image= cv2.GaussianBlur(cv_image, (19,19), 2, np.array([]), 2)
+    for min_dist in xrange(1,6,2):
+        for min_radius in xrange(12,18):
+            for max_radius in xrange(5,11):
+
+            circles= cv2.HoughCircles(cv_image, cv.CV_HOUGH_GRADIENT, 2, width/3,\
+                                    np.array([]), 20, 50, width/15, width/5)
+
+            if circles is None or len(circles) == 0:
+                continue
+
+            # contains_ball= find_ball(circles, cv_image_color, cv_image.shape)
+            contains_ball = None
+            circle_assignments = {}
+            circle_centers = [(245.0,303.0),(331.0,301.0),(419.0,293.0),(281.0,225.0),(367.0,223.0),(323.0,157.0)]
+            # draw
+            for c in circles[:6]:
+                closest_index = 0
+                closest_distance = float("inf")
+
+                #compute euclidean distance
+                for center in circle_centers:
+                    distance = math.sqrt(pow((c[0]-center[0]),2)+pow((c[1]-center[1]),2))
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_index = circle_centers.index(center)
+
+            # green for circles (only draw the 3 strongest)
+                cv2.circle(cv_image_color, (c[0],c[1]), c[2], (0,255,0), 2)
+
+                if not str(closest_index+1) in circle_assignments:
+                    print closest_index+1
+                    circle_assignments[str(closest_index+1)]= c
+
+                #average RGB values for each circle
+                pixels = find_pixels(c, cv_image_color, cv_image.shape)
+                rgb = [0, 0, 0]
+                num_pixels = 0
+                for p in pixels:
+                    rgb[0] += p[0]
+                    rgb[1] += p[1]
+                    rgb[2] += p[2]
+                    num_pixels += 1
+                rgb = np.array(rgb)/float(num_pixels)
 
 
-    ##try edge detection
-    #cv_image= cv2.Canny(cv_image, 20, 60)
-
-    circles=cv2.HoughCircles(cv_image, cv.CV_HOUGH_GRADIENT, 2, 60,\
-                             np.array([]), 20, 50, m/12, m/10)[0]
-
-    
-    #circles=cv2.HoughCircles(cv_image, cv.CV_HOUGH_GRADIENT, 2, 75,\
-    #                         np.array([]), 20, 50, m/12, m/10)[0]
-    #circles=[]
-
-    #still dumb; converting back to cv image for the rest of the processings
-    #cv_image= cv.fromarray(cv_image)
-
-   # contains_ball= find_ball(circles, cv_image_color, cv_image.shape)
-    contains_ball = None
-    circle_assignments = {}
-    circle_centers = [(245.0,303.0),(331.0,301.0),(419.0,293.0),(281.0,225.0),(367.0,223.0),(323.0,157.0)]
-    # draw 
-    for c in circles[:6]:
-        closest_index = 0
-        closest_distance = 100000000000000000
-
-        #compute euclidean distance
-        for center in circle_centers:
-            distance = math.sqrt(pow((c[0]-center[0]),2)+pow((c[1]-center[1]),2))
-            if distance < closest_distance:
-                closest_distance = distance
-                closest_index = circle_centers.index(center) 
-
-     # green for circles (only draw the 3 strongest)
-        cv2.circle(cv_image_color, (c[0],c[1]), c[2], (0,255,0), 2) 
-
-        if not str(closest_index+1) in circle_assignments:
-            print closest_index+1
-            circle_assignments[str(closest_index+1)]= c
-        
-        #average RGB values for each circle
-        pixels = find_pixels(c, cv_image_color, cv_image.shape)
-        rgb = [0, 0, 0]
-        num_pixels = 0
-        for p in pixels:
-            rgb[0] += p[0]
-            rgb[1] += p[1]
-            rgb[2] += p[2]
-            num_pixels += 1
-        rgb = np.array(rgb)/float(num_pixels)
-
-        
-    if contains_ball is not None:
-        cv2.circle(cv_image_color, (contains_ball[0],contains_ball[1]),\
-                   contains_ball[2], (255,0,0), 2)
+            if contains_ball is not None:
+                cv2.circle(cv_image_color, (contains_ball[0],contains_ball[1]),\
+                        contains_ball[2], (255,0,0), 2)
 
 
 
-    #print circle_assignments
-    output_str= ""
-    #print to file
-    f = open("../output.txt","a")
-    for i in range(6):
-        if str(i+1) in circle_assignments:
-            output_str += str(i+1) + ":1 "
-        else:
-            output_str += str(i+1) + ":0 "
-    for i in range(3):
-        output_str += str(i+7) + ":" + str(rgb[i]) + " "
+            #print circle_assignments
+            output_str= ""
+            #print to file
+            with open("../output.txt","a") as f:
+                for i in range(6):
+                    if str(i+1) in circle_assignments:
+                        output_str += str(i+1) + ":1 "
+                    else:
+                        output_str += str(i+1) + ":0 "
+                for i in range(3):
+                    output_str += str(i+7) + ":" + str(rgb[i]) + " "
 
-    f.write(output_str + "\n")
-    #(cols,rows) = cv.GetSize(cv_image)
-    #if cols > 60 and rows > 60 :
-      #cv.Circle(cv_image, (50,50), 10, 255)
+                f.write(output_str + "\n")
+                #(cols,rows) = cv.GetSize(cv_image)
+                #if cols > 60 and rows > 60 :
+                #cv.Circle(cv_image, (50,50), 10, 255)
 
-    cv2.imshow("Image processed", cv_image_color)
-    cv2.waitKey()
+                cv2.imshow("Image processed", cv_image_color)
+                cv2.waitKey()
 
-    #cv.ShowImage("Image processed", cv_image)
-    #cv.WaitKey(3)
-
-    #try:
-      #self.image_pub.publish(self.bridge.cv_to_imgmsg(cv_image, "8UC1"))
-    #except CvBridgeError, e:
-      #print e
 
 def find_ball(circles, color_image, shape):
     best_circle= None
