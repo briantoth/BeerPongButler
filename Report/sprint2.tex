@@ -92,7 +92,7 @@ From a high level, our approach is to detect the remaining cups, determine which
 
 \subsection{Perception}
 
-
+The most complicated and novel part of our project is detecting which cup contains a ball.  Although this sounds simple at first, it rapidly becomes complicated when the possibilities of changing environments, lighting, cups, and viewing angles are considered.
 
 \subsubsection{Tabletop Detection}
 
@@ -134,13 +134,22 @@ Instead, we are pursuing three different, simpler classifiers which will be comp
 
 The simplest classifier simply looks to determine, for each drawn circle, if that circle represents a valid cup.  Therefore this classifier considers only one cup at a time.  Features include the radius of the circle and the average color of pixels in the circle.  The number of detected cups (and the probability of each circle being a cup) is fed into a simple HMM.  Unlike the HMM mentioned previously, this HMM contains only six states, one for each possible total number of cups.  At each time update, the HMM can either transition to the next state (remove a cup) or keep the same number of cups.  This is used as a sanity check for the circle detector; if the identified number of cups is not equal to the expected number of cups or one fewer than the detector is re-run with different parameters.
 
-The second classifier
+The second classifier takes a slightly different approach by considering all of the detected cups at once. Adding the number of cups detected and the number of cups expected as features along with color data for each cup, allows the entire set of circles to be accepted or rejected at once.  This increases the amount of information which can be learned, but has the disadvantage of requiring more guesswork during training (we have to make assumptions about the expected number of cups).
 
 The final classifier goes even further in attempting to consider the entire formation of cups by adding additional features to represent the implicit information in the HMM model.  The first six features represent the “best fit” that the Hough Circle detector can perform given the circles it finds.  Currently the assignment of numbers to cups is done by comparing to the initial 6 cup pyramid.  This makes the assumption that the robot does not significantly move during the course of the game; we are also pursuing an ‘absolute’ model based on coordinates.
-
+    
 The information from the “previous state” is incorporated in features 26-31.  Assuming the robot successfully removed a cup in the previous iteration and all of the circles were detected properly, this will match features 1-6 exactly.
 
-The other features are currently experimental attempts to characterize a cup.  This SVM is really doing double-duty; it requires both the detection of the correct number of cups in the correct relative positions and that the circles detected are actually cups.  At present we average the rbg values of the pixels within the cup-circles.
+The other features are currently experimental attempts to characterize a cup.  This SVM is really doing double-duty; it requires both the detection of the correct number of cups in the correct relative positions and that the circles detected are actually cups.  At present we average the rbg values of the pixels within the cup-circles.\\\\
+Features: 
+$1 \rightarrow 6$: did the cup detector find cup x. \\
+$7 \rightarrow 25$: average rgb values for cups\\
+$26 \rightarrow 31$: was the cup there (i.e. should the cup detector have found cup x)\\
+
+Sample feature vector:\\
+
+$1  <1:0 2:1 3:0 4:0 5:0 6:0 7:146.605410924 8:121.33146163 9:135.208269525 .... 26:0 27:1 28:0 29:0 30:0 31:0>$ \\
+
 
 All of the above use the same method to actually find the ball.  Each identified cup is passed to another SVM which is specifically trained to identify the cup which has the ball.  The features for this SVM are the average color for the cup and the number of orange-like pixels.  This process is separate from the task of actually finding cups, because, until the entire formation is identified, there is little point in searching for the ball.
 
@@ -168,18 +177,26 @@ Because our project revolves around detecting which cup has the ball and moving 
 
 \subsection{Data}
 
-Our data set is comprised of 51 images taken with the Kinect. We label the cups one to six from left to right starting at the bottom left corner. The images were taken of various configurations of the cups, removing different sets of cups or no cups for each image. The angle and position of the Kinect relative to the cup arrangement was also varied as was the lighting. Standard red plastic cups were used for all images. 
+Our data set is comprised of 51 images taken with the Kinect. We label the cups one to six from left to right starting at the bottom left corner. The images were taken of various configurations of the cups, removing different sets of cups or no cups for each image. The angle and position of the Kinect relative to the cup arrangement was also varied as was the lighting.  A few different red plastic cups were used for the images. 
 
 \subsection{Evaluation Metric}
 
+The ultimate evaluation metric is the ability to detect the ball.  Although many of our methods revolve around detecting cups, this is only an intermediary step.  Thus each image is labeled to indicate the coordinates of the ball (negative coordinates indicate that there is no ball present).  An algorithm succeeds if it selects a point near the ball.
+
 \subsection{Results}
 
-Unfortunately we do not yet have any results for our experiments.  Although we have collected data and are currently implementing multiple learning algorithms, we have not yet run these on the full data set.g0
+Unfortunately we do not yet have any results for our experiments.  Although we have collected data and are currently implementing multiple learning algorithms, we have not yet run these on the full data set.
 
 
 \section{Future Work}
 
+\subsection{Motion Planning}
+We are considering using the ee\_cart\_imped package as part of our motion planning. The advantage and disadvantage to using ee\_cart\_imped is that it does not take into account possible collisions. This is an advantage because it will be less senstitive than working with inverse kinematics and might be more successful. It is a disadvantage because it may very easily knock over other cups or hit something on its trajectory. We also plan to continue work with the inverse kinematic solver. We plan to consult with a TA to determine the best approach going forward.
 
+Another current issue is that our perception work is done using the coordinate system of the Kinect whereas our motion planning is down in the base\_link coordinate system. We will need to determine a coordinate transform before combining our motion planning and perception.
+
+\subsection{Perception}
+Our perception algorithms need to be tested by running cross validation and evaluating our learning algorithms. We have created a data set as described, and that data set should be split in order to be used to train, test, and evaluate.
 
 
 
