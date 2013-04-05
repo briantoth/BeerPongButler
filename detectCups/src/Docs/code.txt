@@ -1,0 +1,541 @@
+% Homework 3 Problem 1 Part A
+clc
+clear all
+points = [1 4 3 3 2 1;
+          5 2 3 4 1 1;
+          1 1 1 1 1 1];
+y = [1 1 1 1 -1 -1];
+   
+
+
+w =[0; 0; 0];
+k = 0;
+done = false;
+
+
+while ~done
+    thisLoop = 0;
+    for i = 1:6
+        if y(i)*dot(w,points(:,i)) <= 0
+           w = w + y(i)*points(:,i);
+           k=k+1;
+           thisLoop = thisLoop +1;
+        end
+    end
+    
+    if thisLoop == 0
+        done = true;
+    end
+    
+end
+
+x_pos = [1 3 3 4];
+y_pos = [5 4 3 2];
+x_neg = [1 2];
+y_neg = [1 1];
+hold on
+scatter(x_pos,y_pos,'r')
+scatter(x_neg,y_neg,'b')
+refline(-w(1)/w(2),-w(3)/w(2))
+
+axis([0 6 0 6])
+hold off
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Question 1 Part C
+
+clc
+clear all
+points = [1 4 3 3 2 1;
+          5 2 3 4 1 1;
+          1 1 1 1 1 1];
+y = [1 1 1 1 -1 -1];
+
+gamma_opt = (3/4)*sqrt(2);
+
+
+gamma = 0.9*gamma_opt;
+done = false;
+k = 0;
+w = [0;0;0];
+while ~done
+    thisLoop = 0;
+    for i = 1:6
+        if k == 0
+           w = w + y(i)*points(:,i);
+           k=k+1;
+           thisLoop = thisLoop +1;
+        elseif (y(i)*dot(w,points(:,i)))/norm(w(1:2)) < gamma
+           w = w + y(i)*points(:,i);
+           k=k+1;
+           thisLoop = thisLoop +1;
+        end
+    end
+    
+    if thisLoop == 0
+        done = true;
+    end
+    
+end
+w
+x_pos = [1 3 3 4];
+y_pos = [5 4 3 2];
+x_neg = [1 2];
+y_neg = [1 1];
+hold on
+scatter(x_pos,y_pos,'r')
+scatter(x_neg,y_neg,'b')
+refline(-w(1)/w(2),-w(3)/w(2))
+axis([0 6 0 6])
+
+hold off
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Question 1 Part D
+
+clc
+clear all
+points = [1 4 3 3 2 1;
+          5 2 3 4 1 1;
+          1 1 1 1 1 1];
+y = [1 1 1 1 -1 -1];
+
+gamma_opt = (3/8)*sqrt(2);
+
+beta = [0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.94 0.99];
+w_final = zeros(3,length(beta));
+
+for j = 1:length(beta)
+    gamma = beta(j)*gamma_opt;
+
+    w =[0; 0; 0];
+    k = 0;
+    done = false;
+    iterations = 0;
+    while ~done
+        thisLoop = 0;
+        for i = 1:6
+            if k == 0
+               w = w + y(i)*points(:,i);
+               k=k+1;
+               thisLoop = thisLoop +1;
+            elseif (y(i)*dot(w,points(:,i)))/norm(w(1:2)) < gamma
+               w = w + y(i)*points(:,i);
+               k=k+1;
+               thisLoop = thisLoop +1;
+            end
+        end
+        %iterations = iterations +1;
+        if thisLoop == 0 %|| iterations == 10000
+            done = true;
+        end
+
+    end
+    w_final(:,j) = w;
+end
+
+w_final
+x_pos = [1 3 3 4];
+y_pos = [5 4 3 2];
+x_neg = [1 2];
+y_neg = [1 1];
+hold on
+scatter(x_pos,y_pos,'r')
+scatter(x_neg,y_neg,'b')
+% refline(0,4/3)
+% refline(-1/2,7/2)
+% refline(-1,4)
+for n = 1:length(beta)
+    m = -w_final(1,n)/w_final(2,n);
+    b = -w_final(3,n)/w_final(2,n);
+    refline(m,b)
+end
+
+axis([0 6 0 6])
+
+hold off
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Question 1 Part F
+
+clc
+clear all
+points = [1 4 3 3 2 1;
+          5 2 3 4 1 1;
+          1 1 1 1 1 1];
+y = [1 1 1 1 -1 -1];
+
+
+gamma_opt = (3/4)*sqrt(2);
+
+beta = .9;
+
+a = zeros(1,6);
+
+gamma = beta*gamma_opt
+
+done = false;
+iterations = 0;
+flag = 1;
+while ~done
+    
+    for i = 1:6       
+        
+        w = [0; 0; 0];
+        for k = 1:length(a)                
+            w = w + a(k)*y(k)*points(:,k); 
+        end
+        
+        if y(i)*dot(w,points(:,i))/norm(w(1:2)) <= gamma || flag == 1
+            flag = 0;
+            a(i) = a(i) + 1;
+        end
+    end
+    iterations = iterations + 1;
+    if iterations == 1000
+        
+        done = true;
+    end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Question 2:
+
+General Code used throughout;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+def parse(file_name):
+    file = open(file_name)
+    train= []
+    for line in file:
+        has_class= False
+        current_example= None
+        for s in line.split():
+            if not has_class:
+                my_class= int(s)
+                current_example= (my_class, [])
+                train.append(current_example)
+                has_class= True
+            else:
+                word, frequency= [int(t) for t in s.split(":")]
+                current_example[1].append((word, frequency))
+
+    file.close
+    return train
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Part A:
+
+parta.py:
+
+from parser import parse
+from parta_funcs import find_single_class_error, find_multiclass_error, find_models
+
+tst= parse("../articles.test")
+trn= parse("../articles.train")
+mdls= find_models(trn, 1024)
+
+for i in range(len(mdls)):
+    print "training error for class " + str(i+1) +" = " + \
+            str(find_single_class_error(mdls[i], trn, i+1))
+
+print "multiclass test error= " + str(find_multiclass_error(mdls, tst))
+
+parta_funcs.py:
+
+from parser import parse
+import svmlight
+
+
+def predict_classification(classifications, example):
+    best_value= classifications[0][example]
+    best_index= 0
+    for classification_index in range(len(classifications)):
+        if classifications[classification_index][example] > best_value:
+            best_value= classifications[classification_index][example]
+            best_index= classification_index
+
+    return best_index+1
+
+def find_multiclass_error(models, test):
+    errors= 0
+    classifications= []
+    for i in range(len(models)):
+        classifications.append(svmlight.classify(models[i], test))
+
+    for i in range(len(test)):
+        predicted_classification= predict_classification(classifications, i)
+        if predicted_classification != test[i][0]:
+ 	errors= errors+1
+
+    return float(errors)/len(test)
+
+def find_single_class_error(model, test, target_example):
+    errors= 0
+    test= change_to_binary_examples(test, target_example)
+    classification= svmlight.classify(model, test)
+    for i in range(len(test)):
+        predicted_classification= 0
+        if(classification[i] > 0):
+            predicted_classification= 1
+        else:
+            predicted_classification= -1
+
+	if predicted_classification != test[i][0]:
+           errors= errors+1
+
+    return float(errors)/len(test)
+
+def change_to_binary_examples(training_data, target_example):
+    binary= []
+    for i in range(len(training_data)):
+        if training_data[i][0] == target_example:
+            binary.append((1, training_data[i][1]))
+        else:
+            binary.append((-1, training_data[i][1]))
+
+    return binary
+
+
+def find_models(training_data, c_value):
+    models= []
+    for i in range(1,5):
+        train= change_to_binary_examples(training_data, i)
+	models.append(svmlight.learn(train, type='classification', C=c_value))
+
+    return models
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Part B:
+
+partb.py:
+
+from parser import parse
+from partb_funcs import find_multiclass_validate_and_train_error
+
+train= parse("../articles.train")
+find_multiclass_validate_and_train_error(train)
+
+partb_funcs.py
+
+import random
+from parser import parse
+from parta_funcs import find_multiclass_error, find_models
+
+def create_validate_and_train_subsets(train):
+    random.shuffle(train)
+
+    train_subset= []
+    validate_subset= []
+
+    i= 0
+
+    while i < len(train)*.75:
+        train_subset.append(train[i])
+        i= i+1
+
+    while i < len(train):
+        validate_subset.append(train[i])
+        i= i+1
+
+    return train_subset, validate_subset
+
+def find_multiclass_validate_and_train_error(train):
+    train_subset, validate_subset= create_validate_and_train_subsets(train)
+    for c in [.125 * 2**j for j in range(13)]:
+        models= find_models(train_subset, c)
+        print "for c = " + str(c) + " multi_class validation error= " + \
+        str(find_multiclass_error(models, validate_subset))
+
+        print "for c = " + str(c) + " multi_class train error= " + \
+        str(find_multiclass_error(models, train_subset))
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Part C:
+
+partc.py:
+
+import random
+from parser import parse
+from parta_funcs import find_multiclass_error, find_models
+
+train= parse("../articles.train")
+test= parse("../articles.test")
+
+i= 0
+
+models= find_models(train, .125)
+
+print "test error for c=.125 soft margin= " + \
+        str(find_multiclass_error(models, test))
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Part D:
+
+partd.py:
+
+from parser import parse
+from partd_funcs import normalize
+from partb_funcs import find_multiclass_validate_and_train_error
+import stopwatch
+
+t = stopwatch.Timer()
+
+train= parse("../articles.train")
+train= normalize(train)
+find_multiclass_validate_and_train_error(train)
+
+print "Running Time = " + str(t.elapsed)
+
+
+partd_funcs.py:
+
+import math
+
+def normalize(examples):
+    normalized_examples= []
+    for ex in examples:
+        features= ex[1]
+        div= math.sqrt(reduce(lambda x, y: x+y[1]**2, features, 0))
+        normalized_features= []
+        for feat in features:
+            normalized_features.append((feat[0], feat[1]/div))
+        normalized_examples.append((ex[0],normalized_features))
+
+    print str(math.sqrt(reduce(lambda x, y: x+y[1]**2,
+                                    normalized_examples[0][1], 0)))
+    return normalized_examples
+
+partc_norm.py:
+
+import random
+from parser import parse
+from parta_funcs import find_multiclass_error, find_models
+from partd_funcs import normalize
+
+train= parse("../articles.train")
+train = normalize(train)
+test= parse("../articles.test")
+
+i= 0
+
+models= find_models(train, 2)
+
+print "test error for c=2 soft margin= " + \
+        str(find_multiclass_error(models, test))
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Part E:
+
+parte.py: 
+
+from parser import parse
+from parte_funcs import onevone_multiclass_validate_and_train_error
+import stopwatch
+
+t = stopwatch.Timer()
+
+train= parse("../articles.train")
+onevone_multiclass_validate_and_train_error(train)
+
+print "Running Time = " + str(t.elapsed)
+
+
+parte_funcs.py:
+
+import svmlight
+import random
+from partd_funcs import normalize
+from partb_funcs import create_validate_and_train_subsets
+
+def make_1v1_examples(training_data, positive_example, negative_example):
+    onevone= []
+    for example in training_data:
+        if example[0] == positive_example:
+            onevone.append((1, example[1]))
+        elif example[0] == negative_example:
+            onevone.append((-1, example[1]))
+
+    return onevone
+
+def find_1v1_models(training_data, c_value):
+    models= {}
+    for i in range(1,5):
+        for j in range(i+1,5):
+            train= make_1v1_examples(training_data, i, j)
+            models[(i,j)]= \
+            svmlight.learn(train, type='classification', C=c_value)
+    return models
+
+def predict_classification_1v1(classifications, i):
+    votes= {}
+    for pair in classifications.keys():
+        if classifications[pair][i] > 0:
+            if pair[0] in votes:
+                votes[pair[0]]= votes[pair[0]] + 1
+            else:
+                votes[pair[0]]= 1
+        else:
+            if pair[1] in votes:
+                votes[pair[1]]= votes[pair[1]] + 1
+            else:
+                votes[pair[1]]= 1
+
+    max_vote_num = max(votes.values())
+
+    highest_votes= {}
+
+    for class_num in votes.keys():
+        if votes[class_num] == max_vote_num:
+            highest_votes[class_num] = 1
+
+    for vote_weight in highest_votes.values():
+        vote_weight= float(vote_weight)/len(highest_votes)
+
+    return highest_votes
+
+def multiclass_error_1v1(models, test):
+    errors= 0
+    classifications= {}
+    for pair in models.keys():
+        classifications[pair]=(svmlight.classify(models[pair], test))
+
+    for i in range(len(test)):
+        votes= predict_classification_1v1(classifications, i)
+        for classNum in range(1,5):
+            if classNum in votes and test[i][0] != classNum:
+                errors= errors + votes[classNum]
+
+    return float(errors)/len(test)
+
+def onevone_multiclass_validate_and_train_error(train):
+    train= normalize(train)
+    train_subset, validate_subset= create_validate_and_train_subsets(train)
+    for c in [.125 * 2**j for j in range(13)]:
+        models= find_1v1_models(train_subset, c)
+        print "for c = " + str(c) + " multi_class validation error= " + \
+                str(multiclass_error_1v1(models, validate_subset))
+        print "for c = " + str(c) + " multi_class train error= " + \
+                str(multiclass_error_1v1(models, train_subset))
+
+
+parte2.py:
+
+from parte_funcs import multiclass_error_1v1, find_1v1_models
+from parser import parse
+
+train= parse("../articles.train")
+test= parse("../articles.test")
+
+models= find_1v1_models(train, 2)
+
+print "test error for c=2 soft margin= " + \
+        str(multiclass_error_1v1(models, test))
+
+
+stopwatch.py:
+*This was downloaded from http://code.google.com/p/7oars/downloads/detail?name=stopwatch-0.3.1-py2.5.egg&can=2&q=
+
+

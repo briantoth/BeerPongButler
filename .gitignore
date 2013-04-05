@@ -11,3 +11,7 @@ perception/bin
 perception/build/
 tabletop_object_detector_brian/bin
 tabletop_object_detector_brian/build/
+detectCups/bin
+detectCups/build
+motionPlanning/bin
+motionPlanning/build

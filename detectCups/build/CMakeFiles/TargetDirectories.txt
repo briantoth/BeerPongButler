@@ -1,0 +1,17 @@
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/ROSBUILD_genmsg_cpp.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/ROSBUILD_genmsg_lisp.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/ROSBUILD_gensrv_cpp.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/ROSBUILD_gensrv_lisp.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/clean-test-results.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/hough_circles.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/invert.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/rosbuild_precompile.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/rosbuild_premsgsrvgen.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/rospack_genmsg.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/rospack_genmsg_libexe.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/rospack_gensrv.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/test.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/test-future.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/test-results.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/test-results-run.dir
+/home/brian/fuerte_workspace/sandbox/tutorialROSOpenCV/build/CMakeFiles/tests.dir
