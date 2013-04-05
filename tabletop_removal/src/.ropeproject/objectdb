@@ -1,0 +1,30 @@
+Ä}q(UH/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/impl/tcpros_service.py}q(UServiceProxy.__init__crope.base.oi.memorydb
+ScopeInfo
+q)Åq}q(UinstanceqUdefinedqUH/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/impl/tcpros_service.pyUServiceProxyqáÜUbuiltinUstrÜq	UnoneÖq
+h
+h
+tUunknownÖqs}qÜbUServiceProxy.__call__h)Åq}q(UinstanceqUdefinedqUH/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/impl/tcpros_service.pyUServiceProxyáÜhhUtable_seperator.pyU	SeperatorqáÜUnoneÖqáUunknownÖqhhUH/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/impl/tcpros_service.pyháÜh
+h
+áhu}qÜbUwait_for_serviceh)Åq}qh	h
+Ühs}qÜbuUtable_seperator.pyq}q(USeperator.projecth)Åq}q(hhUtable_seperator.pyháÜUunknownÖqhhths}qÜbUrotationMatrixqh)Åq}q UunknownÖq!ÖUunknownÖq"s}q#ÜbUprojectq$h)Åq%}q&h!h!h!áh"s}q'ÜbUSeperator.normh)Åq(}q)(hhUtable_seperator.pyháÜ(Ubuiltinq*UtuplehhhtÜhhhUtable_seperator.pyháÜh*UlistháÜhu}q+ÜbUmainh)Åq,}q-)hs}q.ÜbUnormq/h)Åq0}q1UnoneÖq2Öh"s}q3ÜbuU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.py}q4(UPublisher.__init__h)Åq5}q6(hhU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.pyU	Publisherq7áÜh	hUJ/opt/ros/fuerte/lib/python2.7/dist-packages/sensor_msgs/msg/_PointCloud.pyU
+PointCloudáh
+h
+h
+h
+ths}q8ÜbUPublisher.publishh)Åq9}q:hhU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.pyh7áÜh
+h
+áhs}q;ÜbUSubscriber.__init__h)Åq<}q=((hhU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.pyU
+Subscriberq>áÜUbuiltinUstrÜq?hhhhhhth(hhU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.pyh>áÜh?hUM/opt/ros/fuerte/lib/python2.7/dist-packages/visualization_msgs/msg/_Marker.pyUMarkeráhUtable_seperator.pyUSeperator.callbackáhhhhth(hhU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/topics.pyU
+SubscriberáÜh	hUK/opt/ros/fuerte/lib/python2.7/dist-packages/sensor_msgs/msg/_PointCloud2.pyUPointCloud2áh
+h
+h
+h
+h
+thu}q@ÜbuU9/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/core.py}qAUis_shutdownh)ÅqB}qC)hs}qDÜbsU>/opt/ros/fuerte/lib/python2.7/dist-packages/roslib/launcher.py}qEUload_manifesth)ÅqF}qGh	h
+Ühs}qHÜbsU;/opt/ros/fuerte/lib/python2.7/dist-packages/rospy/client.py}qI(U	init_nodeh)ÅqJ}qK(h	h
+h
+h
+h
+h
+h
+ths}qLÜbUspinh)ÅqM}qN)hs}qOÜbuu.

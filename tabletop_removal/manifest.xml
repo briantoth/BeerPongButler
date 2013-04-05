@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/pr2_pick_and_place_tutorial</url>
   <depend package="tabletop_object_detector_brian"/>
   <depend package="sensor_msgs"/>
+  <depend package="cv_bridge"/>
 
 </package>
 
