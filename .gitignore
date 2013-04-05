@@ -16,3 +16,4 @@ motionPlanning/bin
 motionPlanning/build
 sprint1_circle_drawing/build/
 sprint1_circle_drawing/bin/
+*.swp
