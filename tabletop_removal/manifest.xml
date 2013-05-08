@@ -1,5 +1,5 @@
 <package>
-  <description brief="perception">
+  <description brief="tabletop_removal">
 
      perception
 
@@ -8,7 +8,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_pick_and_place_tutorial</url>
-  <depend package="tabletop_object_detector_brian"/>
+  <depend package="tabletop_identification"/>
   <depend package="sensor_msgs"/>
   <depend package="cv_bridge"/>
 

@@ -6,7 +6,7 @@
     <arg name="flatten_table" default="false"/>
     <arg name="table_padding" default="0.02"/>
 
-    <node pkg="tabletop_object_detector_brian" name="tabletop_segmentation" type="tabletop_segmentation" respawn="true" output="screen">
+    <node pkg="tabletop_identification" name="tabletop_segmentation" type="tabletop_segmentation" respawn="true" output="screen">
 	<!--topic remapping-->
         <remap from="cloud_in" to="$(arg tabletop_segmentation_points_in)" />
         <remap from="segmentation_srv" to="tabletop_segmentation" />
