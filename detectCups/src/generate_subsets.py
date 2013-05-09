@@ -7,6 +7,7 @@ trn= parse("making_cup_images/output/features/data")
 #need to modify the data so that there are roughly equal numbers of positive and negative examples
 positive = []
 negative= []
+print trn
 for ex in trn:
     if ex[0] == -1:
         negative.append(ex)

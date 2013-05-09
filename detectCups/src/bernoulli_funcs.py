@@ -13,20 +13,20 @@ def bernoulli_model(training_data):
         else:
             total_minus += 1
             count_to_use= counts_minus
-        
+
         for tup in ex[1]:
             if tup[0] in count_to_use:
                 count_to_use[tup[0]] += tup[1]
             else:
                 count_to_use[tup[0]]= tup[1]
-    
+
     #normalize to appropriate totals
     for k in counts_plus.keys():
         counts_plus[k] /= total_plus
-        
+
     for k in counts_minus.keys():
         counts_minus[k] /= total_minus
-        
+
     return (total_plus/len(training_data), total_minus/len(training_data), counts_plus, counts_minus)
 
 def feature_sum(features, model, plus, log_mode):
@@ -70,7 +70,7 @@ def feature_sum(features, model, plus, log_mode):
             current_sum += log(.00001)
 
     return current_sum
-    
+
 def bernoulli_decision(example, model):
     features= {}
     #need to convert list to dictionary for efficiency

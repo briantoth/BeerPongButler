@@ -12,7 +12,7 @@ import generate_subsets
 import subprocess
 import os
 
-c_values= [.001]#, .01, .1, 1, 5, 10]
+c_values= [.001, .01, .1, 1, 5, 10]
 best_performance= 0
 best_c= 0
 
@@ -27,6 +27,8 @@ for c in c_values:
             averaging_count += 1
 
     average_performance/= averaging_count
+    print 'c value: ' + str(c)
+    print 'average_performance: ' + str(average_performance)
 
     if average_performance > best_performance:
         best_performance= average_performance

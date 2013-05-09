@@ -8,30 +8,34 @@ import cv2
 from sensor_msgs.msg import Image
 import numpy as np
 import os
+import glob
 
 class image_converter:
 
-  def __init__(self):
+  def __init__(self, group_num, start_point):
     self.image_pub = rospy.Publisher("image_processed",Image)
+    self.group_num= group_num
+    self.start_point= start_point
 
     cv.NamedWindow("Image processed", 1)
     #self.image_sub = rospy.Subscriber("camera/image_raw",Image,self.callback)
 
   def callback(self,data):
 
-      total_images= 0
+      total_images= int(self.start_point)
 
-      infiles= os.listdir('..')
-
-      for infile in infiles:
+      for infile in glob.glob(os.path.join('../', '*.jpg')):
 
         print infile
         print '###'
-        #cv_image_color= cv2.imread('../'+ infile)
-        cv_image_color= cv2.imread('../'+ 'frame0009.jpg')
+        cv_image_color= cv2.imread(infile)
 
-        num= infile[7:9]
+        num= infile[10:12]
         print "current file number: " + num
+        if num[0] != self.group_num:
+            print "skipping: " + num
+            continue
+
 
         #switch to greyscale
         cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
@@ -60,37 +64,33 @@ class image_converter:
                         for c in circles[:6]:
 
                             circle_rank += 1
-                            circle_pixels= find_pixels(c, cv_image_color, cv_image.shape, bonus_radius)
-                            file_name= str(total_images)+ "_" + num + "_" + str(circle_rank) + "_" + str(min_dist) + "_" +\
+
+                            file_name= num + "_" + str(circle_rank) + "_" + str(min_dist) + "_" +\
                                     str(min_radius) + "_" + str(max_radius) + "_" + str(bonus_radius) + '.png'
 
-                            #for some reason, cv2 doesn't like my circle_pixels array.  to get
-                            #around that i just overwrite a copy of the original image and then crop
-                            circle_pixels= np.array(circle_pixels)
-                            test= cv_image_color.copy()
-                            for y in range(len(circle_pixels)):
-                                row= circle_pixels[y]
-                                for x in range(len(row)):
-                                    test[y][x]= circle_pixels[y][x]
+                            if len(glob.glob(os.path.join('./*', file_name))) != 0:
+                                print file_name + " already exists!"
+                                continue
 
-                            h,w,z= circle_pixels.shape
-                            test= test[:h, :w, :]
+                            file_name= str(total_images) + "_" + file_name
+                            circle_pixels= find_pixels(c, cv_image_color, bonus_radius)[0]
+
 
                             #cv2.imshow("Image processed", test)
                             #cv2.waitKey()
-                            cv2.imwrite(file_name, test)
+                            cv2.imwrite(file_name, circle_pixels)
                             #scipy.misc.imsave(file_name, circle_pixels)
 
                             total_images+= 1
 
 
-def find_pixels(circle, color_image, shape, bonus_radius):
+def find_pixels(circle, color_image, bonus_radius):
     '''
     return all of the pixels from the original image that fall within this
     circle
     '''
     output= []
-    height, width= shape
+    height, width, z= color_image.shape
     for y in range(height):
         this_row= []
         for x in range(width):
@@ -126,15 +126,27 @@ def find_pixels(circle, color_image, shape, bonus_radius):
             #row= [0 for x in range(longest_row_len)]
             new_out.append(row)
 
-    new_out= np.array(new_out)
-    return new_out
+    #for some reason, cv2 doesn't like my circle_pixels array.  to get
+    #around that i just overwrite a copy of the original image and then crop
+    circle_pixels= np.array(new_out)
+    test= color_image.copy()
+    for y in range(len(circle_pixels)):
+        row= circle_pixels[y]
+        for x in range(len(row)):
+            test[y][x]= circle_pixels[y][x]
+
+    h,w,z= circle_pixels.shape
+    test= test[:h, :w, :]
+    return (test,circle)
 
 def dist(a, b):
     return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**.5
 
 def main(args):
+  print args[1]
+  print args[2]
   rospy.init_node('image_converter', anonymous=True)
-  ic = image_converter()
+  ic = image_converter(args[1], args[2])
   ic.callback(None)
   try:
     rospy.spin()
