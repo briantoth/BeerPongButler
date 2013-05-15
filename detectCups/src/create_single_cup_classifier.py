@@ -38,7 +38,7 @@ print "best c value: " + str(best_c)
 print "best performance: " + str(best_performance)
 
 #create a classifier from all of the training data
-os.system('../svm_learn -c ' + str(best_c) + ' output/full_training output/best_single_cup_model')
+os.system('../svm_learn -c ' + str(best_c) + ' output/full_training output/best_single_cup_model_for_ball')
 
 #don't really need any of the below for robot learning
 #run after selecting best c value and classifying the test set
