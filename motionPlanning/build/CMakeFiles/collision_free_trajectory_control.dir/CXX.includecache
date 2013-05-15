@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/collision_free_trajectory_control.cpp
+/home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/collision_free_trajectory_control.cpp
 ros/ros.h
 -
 actionlib/client/simple_action_client.h

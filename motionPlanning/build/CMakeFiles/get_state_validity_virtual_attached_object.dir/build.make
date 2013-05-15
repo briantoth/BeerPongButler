@@ -4,7 +4,7 @@
 #=============================================================================
 # Special targets provided by cmake.
 
-# Disable implicit rules so canoncical targets will work.
+# Disable implicit rules so canonical targets will work.
 .SUFFIXES:
 
 # Remove some rules from gmake that .SUFFIXES does not remove.
@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning
+CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build
+CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/get_state_validity_virtual_attached_object.dir/depend.make
@@ -50,16 +50,16 @@ CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: ../src/get_state_validity_virtual_attached_object.cpp
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: ../manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/std_msgs/manifest.xml
+CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/roslang/manifest.xml
+CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/rospy/manifest.xml
+CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/roscpp/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/actionlib_msgs/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/geometry_msgs/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/sensor_msgs/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/trajectory_msgs/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/stacks/bullet/manifest.xml
-CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/roslang/manifest.xml
-CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/roscpp/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/rosconsole/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/stacks/geometry/angles/manifest.xml
-CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/rospy/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/rostest/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/share/message_filters/manifest.xml
@@ -175,17 +175,17 @@ CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_mechanism_controllers/msg_gen/generated
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_mechanism_controllers/srv_gen/generated
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o: /opt/ros/fuerte/stacks/pr2_arm_navigation/pr2_arm_navigation_perception/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o -c /home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/get_state_validity_virtual_attached_object.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o -c /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/get_state_validity_virtual_attached_object.cpp
 
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/get_state_validity_virtual_attached_object.cpp > CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/get_state_validity_virtual_attached_object.cpp > CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.i
 
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/get_state_validity_virtual_attached_object.cpp -o CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -DOCTOMAP_NODEBUGOUT -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/get_state_validity_virtual_attached_object.cpp -o CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.s
 
 CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o.requires:
 .PHONY : CMakeFiles/get_state_validity_virtual_attached_object.dir/src/get_state_validity_virtual_attached_object.o.requires
@@ -221,6 +221,6 @@ CMakeFiles/get_state_validity_virtual_attached_object.dir/clean:
 .PHONY : CMakeFiles/get_state_validity_virtual_attached_object.dir/clean
 
 CMakeFiles/get_state_validity_virtual_attached_object.dir/depend:
-	cd /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kimberly/fuerte_workspace/sandbox/motionPlanning /home/kimberly/fuerte_workspace/sandbox/motionPlanning /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/get_state_validity_virtual_attached_object.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles/get_state_validity_virtual_attached_object.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/get_state_validity_virtual_attached_object.dir/depend
 

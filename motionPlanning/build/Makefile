@@ -8,7 +8,7 @@ default_target: all
 #=============================================================================
 # Special targets provided by cmake.
 
-# Disable implicit rules so canoncical targets will work.
+# Disable implicit rules so canonical targets will work.
 .SUFFIXES:
 
 # Remove some rules from gmake that .SUFFIXES does not remove.
@@ -36,10 +36,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning
+CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build
+CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -66,9 +66,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -328,32 +328,6 @@ get_state_validity_virtual_object: cmake_check_build_system
 get_state_validity_virtual_object/fast:
 	$(MAKE) -f CMakeFiles/get_state_validity_virtual_object.dir/build.make CMakeFiles/get_state_validity_virtual_object.dir/build
 .PHONY : get_state_validity_virtual_object/fast
-
-#=============================================================================
-# Target rules for targets named motionPlan
-
-# Build rule for target.
-motionPlan: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 motionPlan
-.PHONY : motionPlan
-
-# fast build rule for target.
-motionPlan/fast:
-	$(MAKE) -f CMakeFiles/motionPlan.dir/build.make CMakeFiles/motionPlan.dir/build
-.PHONY : motionPlan/fast
-
-#=============================================================================
-# Target rules for targets named motionPlan_simple
-
-# Build rule for target.
-motionPlan_simple: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 motionPlan_simple
-.PHONY : motionPlan_simple
-
-# fast build rule for target.
-motionPlan_simple/fast:
-	$(MAKE) -f CMakeFiles/motionPlan_simple.dir/build.make CMakeFiles/motionPlan_simple.dir/build
-.PHONY : motionPlan_simple/fast
 
 #=============================================================================
 # Target rules for targets named move_arm_joint_goal
@@ -746,36 +720,6 @@ src/get_state_validity_virtual_object.s:
 .PHONY : src/get_state_validity_virtual_object.s
 
 # target to build an object file
-src/motionPlan.o:
-	$(MAKE) -f CMakeFiles/motionPlan.dir/build.make CMakeFiles/motionPlan.dir/src/motionPlan.o
-.PHONY : src/motionPlan.o
-
-# target to preprocess a source file
-src/motionPlan.i:
-	$(MAKE) -f CMakeFiles/motionPlan.dir/build.make CMakeFiles/motionPlan.dir/src/motionPlan.i
-.PHONY : src/motionPlan.i
-
-# target to generate assembly for a file
-src/motionPlan.s:
-	$(MAKE) -f CMakeFiles/motionPlan.dir/build.make CMakeFiles/motionPlan.dir/src/motionPlan.s
-.PHONY : src/motionPlan.s
-
-# target to build an object file
-src/motionPlan_simple.o:
-	$(MAKE) -f CMakeFiles/motionPlan_simple.dir/build.make CMakeFiles/motionPlan_simple.dir/src/motionPlan_simple.o
-.PHONY : src/motionPlan_simple.o
-
-# target to preprocess a source file
-src/motionPlan_simple.i:
-	$(MAKE) -f CMakeFiles/motionPlan_simple.dir/build.make CMakeFiles/motionPlan_simple.dir/src/motionPlan_simple.i
-.PHONY : src/motionPlan_simple.i
-
-# target to generate assembly for a file
-src/motionPlan_simple.s:
-	$(MAKE) -f CMakeFiles/motionPlan_simple.dir/build.make CMakeFiles/motionPlan_simple.dir/src/motionPlan_simple.s
-.PHONY : src/motionPlan_simple.s
-
-# target to build an object file
 src/move_arm_joint_goal.o:
 	$(MAKE) -f CMakeFiles/move_arm_joint_goal.dir/build.make CMakeFiles/move_arm_joint_goal.dir/src/move_arm_joint_goal.o
 .PHONY : src/move_arm_joint_goal.o
@@ -875,8 +819,6 @@ help:
 	@echo "... get_state_validity"
 	@echo "... get_state_validity_virtual_attached_object"
 	@echo "... get_state_validity_virtual_object"
-	@echo "... motionPlan"
-	@echo "... motionPlan_simple"
 	@echo "... move_arm_joint_goal"
 	@echo "... move_arm_path_constraints"
 	@echo "... move_arm_pose_goal"
@@ -932,12 +874,6 @@ help:
 	@echo "... src/get_state_validity_virtual_object.o"
 	@echo "... src/get_state_validity_virtual_object.i"
 	@echo "... src/get_state_validity_virtual_object.s"
-	@echo "... src/motionPlan.o"
-	@echo "... src/motionPlan.i"
-	@echo "... src/motionPlan.s"
-	@echo "... src/motionPlan_simple.o"
-	@echo "... src/motionPlan_simple.i"
-	@echo "... src/motionPlan_simple.s"
 	@echo "... src/move_arm_joint_goal.o"
 	@echo "... src/move_arm_joint_goal.i"
 	@echo "... src/move_arm_joint_goal.s"

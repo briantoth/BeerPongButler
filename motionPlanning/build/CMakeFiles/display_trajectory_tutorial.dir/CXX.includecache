@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/display_trajectory_tutorial.cpp
+/home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/display_trajectory_tutorial.cpp
 arm_navigation_msgs/DisplayTrajectory.h
 -
 boost/thread.hpp
