@@ -16,15 +16,15 @@ class find_features:
 
   def generate_features(self, cv_image_color, label):
         #switch to greyscale
-        cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
+        #cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
         #print cv_image_color
 
         #features
-        width,height= cv_image.shape
+        width,height,z= cv_image_color.shape
 
         #feature - average RGB values for each circle
         #feature - total number of pixels in the 'cup'
-        pixels = find_pixels(cv_image_color, cv_image.shape)
+        pixels = find_pixels(cv_image_color, cv_image_color.shape)
         rgb = [0, 0, 0]
         for p in pixels:
             rgb[0] += p[0]
@@ -33,8 +33,9 @@ class find_features:
 
         rgb = np.array(rgb)/float(len(pixels))
 
+        #TODO: change back later
         output_str= str(label) + " 1:" + str(width) + " 2:" + str(height) + " 3:" + str(len(pixels)) +\
-                " 4:" + str(int(rgb[0])) + " 5:" + str(int(rgb[1])) + " 6:" + str(int(rgb[2]))
+                " 4:" + str(int(rgb[0])) + " 5:" + str(int(rgb[1])) + " 6:" + str(int(rgb[2]))#+ " 7:" + str(int(find_orange(cv_image_color)))
         print output_str
         return output_str
 
@@ -57,7 +58,7 @@ class find_features:
         if image_num in labels:
             cv_image_color= cv2.imread(infile)
 
-            #TODO: change in the future
+            #TODO: change back later
             label= -1 if labels[image_num] == 0 else 1
             output_str= self.generate_features(cv_image_color, label)
 
@@ -76,13 +77,27 @@ def find_pixels(color_image, shape):
     circle
     '''
     output= []
-    height, width= shape
+    height, width, z= shape
     for y in range(height):
         for x in range(width):
             if color_image[y][x].any():
                 output.append(color_image[y][x])
 
     return output
+
+def find_orange(pixels):
+    """count the number of pixels in the 'orange' range"""
+    orange_pixel_count= 0
+    for row in pixels:
+        for p in row:
+            #determined by looking at rgb values of a ball picture
+            #needs to be tweaked for exact camera and scene
+            if p[0] < 44 and p[0] > 0 and\
+            p[1] < 101 and p[1] > 18 and\
+            p[2] < 235 and p[2] > 152:
+                orange_pixel_count += 1
+
+    return orange_pixel_count
 
 def dist(a, b):
     return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**.5
