@@ -5,152 +5,204 @@ import sys
 import rospy
 import cv2.cv as cv
 import cv2
-from std_msgs.msg import String
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
-import math
+import svmlight
+sys.path.append('./making_cup_images/output/features/')
+from find_features import find_features
+sys.path.append('./making_cup_images/output/')
+from create_cup_images import find_pixels
+from parser import parse_one_line
+import glob
+import os
 
 class image_converter:
 
-  def __init__(self):
+  def __init__(self, dir):
     self.image_pub = rospy.Publisher("image_processed",Image)
+    self.dir= dir
 
     cv.NamedWindow("Image processed", 1)
-    self.bridge = CvBridge()
     #self.image_sub = rospy.Subscriber("camera/image_raw",Image,self.callback)
 
   def callback(self,data):
+    labels= {}
+    true_positives= 0
+    false_positives= 0
+    incorrect_positives= 0
+    true_negatives= 0
+    false_negatives= 0
+    with open('labeled_figures.cvs', 'r') as f:
+        for line in f:
+            name, x, y= line.split(',')
+            labels[name]= (int(float(x)),int(float(y)))
+     
+    for infile in glob.glob(self.dir+'/*.jpg'):
+        print infile
 
-    cv_image_color= cv2.imread("frame0019.jpg")
+        cv_image_color= cv2.imread(infile)
+        #cv_image_color= cv2.imread("orange_ball.png")
+        #r_max= 0
+        #r_min= 10000000000
+        #g_max= 0
+        #g_min = 10000000000
+        #b_max= 0
+        #b_min= 10000000000
+        #for row in cv_image_color:
+        #    for p in row:
+        #        if p[0] > r_max:
+        #            r_max= p[0]
 
-    #switch to greyscale
-    cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
-    #print cv_image_color
+        #        if p[0] < r_min:
+        #            r_min= p[0]
 
-    width,height= cv_image.shape
+        #        if p[1] > g_max:
+        #            g_max= p[1]
 
-    #try a bunch of different parameters
+        #        if p[1] < g_min:
+        #            g_min= p[1]
 
-    for min_dist in xrange(1,6,2):
-        for min_radius in xrange(12,18):
-            for max_radius in xrange(5,11):
+        #        if p[2] > b_max:
+        #            b_max= p[2]
 
-            circles= cv2.HoughCircles(cv_image, cv.CV_HOUGH_GRADIENT, 2, width/3,\
-                                    np.array([]), 20, 50, width/15, width/5)
+        #        if p[2] < b_min:
+        #            b_min= p[2]
 
-            if circles is None or len(circles) == 0:
-                continue
+        #print r_max
+        #print r_min
+        #print g_max
+        #print g_min
+        #print b_max
+        #print b_min
 
-            # contains_ball= find_ball(circles, cv_image_color, cv_image.shape)
-            contains_ball = None
-            circle_assignments = {}
-            circle_centers = [(245.0,303.0),(331.0,301.0),(419.0,293.0),(281.0,225.0),(367.0,223.0),(323.0,157.0)]
-            # draw
-            for c in circles[:6]:
-                closest_index = 0
-                closest_distance = float("inf")
+        #switch to greyscale
+        cv_image= cv2.cvtColor(cv_image_color, cv2.COLOR_BGR2GRAY)
+        #print cv_image_color
 
-                #compute euclidean distance
-                for center in circle_centers:
-                    distance = math.sqrt(pow((c[0]-center[0]),2)+pow((c[1]-center[1]),2))
-                    if distance < closest_distance:
-                        closest_distance = distance
-                        closest_index = circle_centers.index(center)
+        width,height= cv_image.shape
 
-            # green for circles (only draw the 3 strongest)
-                cv2.circle(cv_image_color, (c[0],c[1]), c[2], (0,255,0), 2)
+	infile= infile[2:]
+	print infile
 
-                if not str(closest_index+1) in circle_assignments:
-                    print closest_index+1
-                    circle_assignments[str(closest_index+1)]= c
+        #try a bunch of different parameters
+        contains_ball= None
 
-                #average RGB values for each circle
-                pixels = find_pixels(c, cv_image_color, cv_image.shape)
-                rgb = [0, 0, 0]
-                num_pixels = 0
-                for p in pixels:
-                    rgb[0] += p[0]
-                    rgb[1] += p[1]
-                    rgb[2] += p[2]
-                    num_pixels += 1
-                rgb = np.array(rgb)/float(num_pixels)
+        for min_dist in xrange(1,6,2):
+            for min_radius in xrange(12,19,3):
+                for max_radius in xrange(5,12,3):
+                    for bonus_radius in xrange(0,9,4):
 
+	                if contains_ball is not None:
+                            print "got here"
+                            break
 
-            if contains_ball is not None:
-                cv2.circle(cv_image_color, (contains_ball[0],contains_ball[1]),\
-                        contains_ball[2], (255,0,0), 2)
+                        circles= cv2.HoughCircles(cv_image, cv.CV_HOUGH_GRADIENT, 2, width/3,\
+                                                np.array([]), 20, 50, width/15, width/5)
 
+                        #in this case we did not detect any circles
+                        if circles is None or len(circles) == 0:
+                            continue
 
+                        #this classifier is doing all of the work
+                        circles= simple_classifier(circles[0], cv_image_color, bonus_radius)
 
-            #print circle_assignments
-            output_str= ""
-            #print to file
-            with open("../output.txt","a") as f:
-                for i in range(6):
-                    if str(i+1) in circle_assignments:
-                        output_str += str(i+1) + ":1 "
-                    else:
-                        output_str += str(i+1) + ":0 "
-                for i in range(3):
-                    output_str += str(i+7) + ":" + str(rgb[i]) + " "
+                        #in this case we did not detect any circles
+                        if circles is None or len(circles) == 0:
+                            continue
 
-                f.write(output_str + "\n")
-                #(cols,rows) = cv.GetSize(cv_image)
-                #if cols > 60 and rows > 60 :
-                #cv.Circle(cv_image, (50,50), 10, 255)
+                        contains_ball= find_ball(circles, cv_image_color, cv_image.shape)
 
-                cv2.imshow("Image processed", cv_image_color)
-                cv2.waitKey()
+                        for tup in circles:
+                            c= tup[1]
+                            #draw a green circle for this
+                            cv2.circle(cv_image_color, (c[0],c[1]), c[2], (0,255,0), 2)
 
+                        if contains_ball is not None:
+                            cv2.circle(cv_image_color, (contains_ball[0],contains_ball[1]),\
+                                    contains_ball[2], (255,0,0), 2)
+                            
+
+                        #cv2.imshow("Image processed", cv_image_color)
+                        #cv2.waitKey()
+               	    
+        #check to see if the selected cup is correct
+        if infile in labels:
+            if contains_ball is None:
+                if labels[infile] == (-1,-1):
+                    true_negatives+=1
+                else:
+                    false_negatives+= 1
+            elif labels[infile] == (-1, -1):
+                false_positives += 1
+            elif dist((contains_ball[0], contains_ball[1]), labels[infile]) < contains_ball[2]:
+                true_positives += 1
+            else:
+                incorrect_positives +=1
+        else:
+            print "can't find the image!"
+                            
+    accuracy= (true_positives+true_negatives)/(true_positives+true_negatives+false_positives+false_negatives+incorrect_positives)
+    print 'accuracy:  ' + str(accuracy)
+    print 'incorrect positives: ' + str(incorrect_positives)
+    print 'false positives: ' + str(false_positives)
+    print 'false negatives: ' + str(false_negatives)
+    print 'true positives: ' + str(true_positives)
+    print 'true negatives: ' + str(true_negatives)
+
+    
+def simple_classifier(circles, color_image, bonus_radius):
+    model= svmlight.read_model('./output/best_single_cup_model')
+    ff= find_features()
+    #TODO: fix
+    label= 0
+    new_circles= []
+    for c in circles[:6]:
+        circle= find_pixels(c, color_image, bonus_radius)
+        new_circles.append(circle)
+        #create features for that circle
+        features= ff.generate_features(circle[0], label)
+        features= parse_one_line(features)
+        print features
+        #run the classifier on that circle
+        classification= svmlight.classify(model, [features])
+        print classification
+        #make a decision about whether that circle is circly enough
+        #cv2.imshow("Image processed", circle)
+        #cv2.waitKey()
+
+    #for the strict form of the classifier, I require that all of the detected circles
+    #are in fact circles.  other classifiers may be more lenient
+    return new_circles
 
 def find_ball(circles, color_image, shape):
     best_circle= None
     #arbitrary number so that the no-ball scenario can be detected
-    best_count= 100
+    best_count=  50
     for c in circles:
         orange_pixel_count= 0
-        pixels= find_pixels(c, color_image, shape)
-        for p in pixels:
-            #determined by looking at rgb values of a ball picture
-            #needs to be tweaked for exact camera and scene
-            if p[0] < 85 and p[0] > 12 and\
-               p[1] < 127 and p[1] > 80 and\
-               p[2] < 140 and p[2] > 116:
-                orange_pixel_count += 1
+        #pixels= find_pixels(c, color_image, shape)
+        for row in c[0]:
+            for p in row:
+                #determined by looking at rgb values of a ball picture
+                #needs to be tweaked for exact camera and scene
+                if p[0] < 44 and p[0] > 0 and\
+                p[1] < 101 and p[1] > 18 and\
+                p[2] < 235 and p[2] > 152:
+                    orange_pixel_count += 1
 
+        print orange_pixel_count
         if orange_pixel_count > best_count:
-            best_circle= c
+            best_circle= c[1]
             best_count= orange_pixel_count
 
     return best_circle
-
-
-def find_pixels(circle, color_image, shape):
-    '''
-    return all of the pixels from the original image that fall within this
-    circle
-    '''
-    output= []
-    height, width= shape
-    for y in range(height):
-        row_viz= ""
-        for x in range(width):
-            if dist((x,y), (circle[0], circle[1])) <= circle[2]:
-                output.append(color_image[y][x])
-                row_viz+= "o"
-
-#        if row_viz != "":
-#            print row_viz
-
-    return output
 
 def dist(a, b):
     return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**.5
 
 def main(args):
   rospy.init_node('image_converter', anonymous=True)
-  ic = image_converter()
+  ic = image_converter(args[1])
   ic.callback(None)
   try:
     rospy.spin()

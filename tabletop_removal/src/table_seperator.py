@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import roslib
-roslib.load_manifest('perception')
+roslib.load_manifest('tabletop_removal')
 import rospy
-from tabletop_object_detector_brian.srv import *
+from tabletop_identification.srv import *
 from sensor_msgs.msg import PointCloud2, PointCloud, Image
 
 class Seperator():
@@ -30,7 +30,8 @@ class Seperator():
             im.header.seq= 72
             im.header.stamp.secs= 1365037570
             im.header.stamp.nsecs= 34077284
-            im.header.frame_id= '/camera_rgb_optical_frame'
+            #im.header.frame_id= '/camera_rgb_optical_frame'
+            im.header.frame_id= '/camera_rgb_frame'
             im.height= 480
             im.width= 640
             im.encoding= '16UC1'
@@ -38,9 +39,14 @@ class Seperator():
             im.step= 1280
             im.data= [100 for n in xrange(1280*480)]
 
+            x_min= resp.table.x_min
+            x_total= abs(x_min)+abs(resp.table.x_max)
+
+            y_min= resp.table.y_min
+            y_total= abs(y_min)+abs(resp.table.y_max)
             for point in resp.clusters[0].points:
-                x= int(point.x * (640))
-                y= int(point.y * (480))
+                x= int((point.x - x_min) * 640/x_total)
+                y= int((point.y - y_min) * 480/y_total)
                 im.data[y*1280 + x*2-1] = 10
 
             pub.publish(im)
