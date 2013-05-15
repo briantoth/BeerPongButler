@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/get_state_validity.cpp
+/home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/get_state_validity.cpp
 ros/ros.h
 -
 arm_navigation_msgs/GetPlanningScene.h

@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/addCylinder.cpp
+/home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/addCylinder.cpp
 ros/ros.h
 -
 arm_navigation_msgs/CollisionObject.h

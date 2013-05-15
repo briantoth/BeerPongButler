@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/kimberly/fuerte_workspace/sandbox/motionPlanning/src/get_collision_free_ik_other_base.cpp
+/home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/src/get_collision_free_ik_other_base.cpp
 ros/ros.h
 -
 kinematics_msgs/GetKinematicSolverInfo.h

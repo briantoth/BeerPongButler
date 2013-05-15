@@ -4,7 +4,7 @@
 #=============================================================================
 # Special targets provided by cmake.
 
-# Disable implicit rules so canoncical targets will work.
+# Disable implicit rules so canonical targets will work.
 .SUFFIXES:
 
 # Remove some rules from gmake that .SUFFIXES does not remove.
@@ -32,12 +32,15 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning
+CMAKE_SOURCE_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build
+CMAKE_BINARY_DIR = /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build
 
 # Utility rule file for test-results.
+
+# Include the progress variables for this target.
+include CMakeFiles/test-results.dir/progress.make
 
 CMakeFiles/test-results:
 	/opt/ros/fuerte/share/rosunit/bin/summarize_results.py --nodeps motionPlanning
@@ -55,6 +58,6 @@ CMakeFiles/test-results.dir/clean:
 .PHONY : CMakeFiles/test-results.dir/clean
 
 CMakeFiles/test-results.dir/depend:
-	cd /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kimberly/fuerte_workspace/sandbox/motionPlanning /home/kimberly/fuerte_workspace/sandbox/motionPlanning /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/motionPlanning/build/CMakeFiles/test-results.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build /home/kimberly/fuerte_workspace/sandbox/BeerPongButler/motionPlanning/build/CMakeFiles/test-results.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/test-results.dir/depend
 
