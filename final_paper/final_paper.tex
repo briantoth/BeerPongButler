@@ -139,15 +139,101 @@ $1  <1:0 2:1 3:0 4:0 5:0 6:0 7:146.605410924 8:121.33146163 9:135.208269525 ....
 All of the above use the same method to actually find the ball.  Each identified cup is passed to another SVM which is specifically trained to identify the cup which has the ball.  The features for this SVM are the average color for the cup and the number of orange-like pixels.  This process is separate from the task of actually finding cups, because, until the entire formation is identified, there is little point in searching for the ball.
 
 \subsection{Results}
-
-
+\newpage
 \section{Motion Planning}
 
-We began by working with pick and place, but this algorithm does not work for our application because we are not picking up a stand alone object. We proceeded to investigate other motion planning techniques including an inverse kinematic solver. Given the x,y,z location of the center of the desired cup, our goal was to move the gripper three inches above that location. The three inches would allow room to rotate the gripper such that it is oriented downward into the cup. The gripper would then be move five inches downward so that the gripper is inside the cup near the center. The gripper would then spread, securing the cup. This method of gripping the cup was determined to be the best because it could be used on any cup whether it is on an edge or surrounded by other cups. We would then raise the arm to remove that cup from the game.  This approach proved problematic due to sensitivity of the inverse kinematic solver. 
+The overall goal of the motion planning is to remove the cup, which was determined to contain a ball, from the cup arrangement. To accomplish this goal,  a model of the situation was created in gazebo and inverse kinematics were used to plan the right arm's path. The motion plan assumes that the PR2 is positioned in front of the cup arrangement as shown in Figure~\ref{fig:start} with its arms positioned straight in front of the PR2 body and the grippers pointed upwards at an angle. The motion plan uses only the right arm of the PR2 to complete the goals.
 
-The first step taken was to successful run the move\_arm\_pose\_goal tutorial. This tutorial takes a set of position and orientation coordinates and solves inverse kinematics to determine the path to move the end effector to that position. Next, we looked at the position of the coke can in the pr2\_gazebo world launched from pr2\_table\_object.launch. The coke can is at position x = 0.7, y = 0, z = 0.55. We then plugged these coordinates into our inverse kinematic solver but it failed. We guessed that this might have failed because if the end effector moved to those coordinates it would be colliding with the coke can, so we tried the same coordinates in the world launch by pr2\_empty\_world.launch. The inverse kinematics again failed, and we began changing the coordinates small amounts in each direction in attempt to get the inverse kinematics to solve. The idea was that the location of the coke can was difficult for the PR2 to navigate to (not impossible) and the sensitivity of the PR2 found joints violating limits. We were unable to successful use inverse kinematics to move the arm to the desired position.
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.2]{cups_pr2_table}
+      \caption{PR2 completing motion task in an empty world.}
+      \label{fig:start}
+\end{figure}
 
-We use a model of the red plastic cups which was found on the Google 3D warehouse. We are in the process of creating a launch file which will spawn a table and six of the downloaded cups in the correct orientation.
+
+\subsection{Gazebo Models}
+The beer pong scene was modeled in Gazebo using two different object types. The first was the default table object. The second was a plastic cup object to represent the commonly used red plastic SOLO cups used in beer pong. The plastic cup model was sourced from the Google 3D Warehouse. An xml file was created to allow the object to be spawned in the Gazebo world. The cup object had to be scaled in order to fit the scope of the gazebo world. The cup was scaled to 4\% of it's original size to be the approximate size of a real cup with respect to the PR2 and the table in the Gazebo world. Originally the collision map was set to be the same size as the visual cup in gazebo. However, as will be described in the inverse kinematics section below, that size collision map was not ideal. The collision map for the object was shrunk to 3\% of it's original size compared to the visual cup which was scaled to 4\% of it's orginal size. By making the collision map smaller, the gripper was able to move closer to the cup object and inverse kinematics was able to successufly be solved. 
+
+The cup objects were spawned into the gazebo world using the following coordinates as seen in Figure~\ref{fig:cups}:
+
+\begin{description}
+\item[Cup 0]  (0.7, 0.15, 0.52)
+\item[Cup 1] (0.7, 0.0, 0.52)
+\item[Cup 2] (0.7, -0.15, 0.52)
+\item[Cup 3] (0.83, 0.075, 0.52)
+\item[Cup 4] (0.83, -0.075, 0.52)
+\item[Cup 5] (0.96, 0.0, 0.52)
+\end{description}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.2]{cups}
+      \caption{Cup arrangement in gazebo}
+      \label{fig:cups}
+\end{figure}
+
+These coordinates were chosen because they mimick the real set up of a six cup game, the cup edges do not touch, and the cups do not collide with the table object. By spawning the cups such that they do not touch any other object, the cups are prevented from flying off in a collision.
+
+\subsection{Gripping}
+Several gripping techniques were explored in the search for the optimal approach. The two main techniques considered were: gripping one side of the cup and expanding the gripper inside the cup. In the first method, the grip would be positioned such that it is point down vertically at the edge of the cup. The gripper would also be positioned with one side of the gripper on the inside and outside of the plane made by the side of the cup. The gripper would be opened and moved down so that the grippers are on either side of the cup. The gripper would then close and raise the cup away from the arrangement. This method would require the gripper to be positioned fairly accurately above the center of an edge. Furthermore, this method would be difficult to use in a ten cup set up because it would be hard to get to the edges of the middle cup. 
+
+The second method, the gripper would be moved so that it is was pointing veritically over the center of the cup. The gripper would then be lowered into the cup and opened such that it applies a constant pressure to the interior sides of the cup. The gripper would be opened a set distance which would be determined through trial and error using the real PR2. The cup would then be lifted up away from the arrangement with the gripper held open to secure the cup. This method would work for either inner or outer cups as well as cups of different shapes and sizes. Additionally, this method would still work if the gripper was not placed exactly at the center of the cup. The second method was chosen as the final gripping method.
+
+\subsection{Inverse Kinematics}
+
+The overall goal of the inverse kinematics is to move the right arm of the PR2 to complete the following tasks:
+\begin{enumerate}
+\item move the gripper such that it points down over the center of the cup
+\item move the gripper down into the cup 
+\item spread the gripper to secure the cup
+\item move the gripper up and away to remove the cup from the arrangement
+\end{enumerate}
+
+The x,y,z coordinates of the cup we want to move are taken from perception and transformed into the "base\_link" coordinate system from the Kinect coordinate system using the tf package.
+
+The first step was to insure that the PR2 could successfully complete the motion without violating joint limits in an empty world as seen in Figure~\ref{fig:empty}.
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.15]{pr2_empty_world}
+      \caption{PR2 completing motion task in an empty world.}
+      \label{fig:empty}
+\end{figure}
+
+After the same movements were confirmed to possible with the table in gazebo, cup 1 was spawned into gazebo and the inverse kinematics was again repeated. However, with the cup in the gazebo, the inverse kinematics failed. The issue was with the collision map of the cup. The collision map was shrunk to be slightly smaller than the visual cup. By shrinking the collision map, the gripper could move closer to the cup and the inverse kinematics were successful. The collision map size was tuned to be small enough to allow inverse kinematics to solve but large enough such that the gripper would not go straight through the visual cup. When the collision map was too small, the arm went straight through the cups and collided with the table as shown in Figure~\ref{fig:dumb}.
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.2]{dumb}
+      \caption{Effects of too small of a collision map}
+      \label{fig:dumb}
+\end{figure}
+
+Finally, the motion plan was executed in simulation with the full cup arrangement. We were not able to use the real PR2 because it was not operational. The gripping motion was not able to be performed in gazebo because the physics of gazebo is not ideal. However, we are confident that the designed gripping method we decided on would work if we were able to calibrate it on the real PR2. 
+
+The PR2 first moves the gripper over the cup which will be moved as seen in Figure~\ref{fig:over}. Next the gripper would be spread to secure the cup in the real world scenario.
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.2]{gripper_over_cup}
+      \caption{PR2 gripper over cup 1}
+      \label{fig:over}
+\end{figure}
+
+Finally, the PR2 moves the gripper away from the robot while maintaining control of the cup shown in Figure~\ref{fig:away}.
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.2]{gripper_away}
+      \caption{PR2 gripper moved away from arrangement}
+      \label{fig:away}
+\end{figure}
+
+
+\subsection{Other Considerations}
+We began by working with pick and place, but this algorithm does not work for our application because we are not picking up a stand alone object.
+
+
 
 
 \section{Experiments}
@@ -169,15 +255,6 @@ The ultimate evaluation metric is the ability to detect the ball.  Although many
 Unfortunately we do not yet have any results for our experiments.  Although we have collected data and are currently implementing multiple learning algorithms, we have not yet run these on the full data set.
 
 
-\section{Future Work}
-
-\subsection{Motion Planning}
-We are considering using the ee\_cart\_imped package as part of our motion planning. The advantage and disadvantage to using ee\_cart\_imped is that it does not take into account possible collisions. This is an advantage because it will be less senstitive than working with inverse kinematics and might be more successful. It is a disadvantage because it may very easily knock over other cups or hit something on its trajectory. We also plan to continue work with the inverse kinematic solver. We plan to consult with a TA to determine the best approach going forward.
-
-Another current issue is that our perception work is done using the coordinate system of the Kinect whereas our motion planning is down in the base\_link coordinate system. We will need to determine a coordinate transform before combining our motion planning and perception.
-
-\subsection{Perception}
-Our perception algorithms need to be tested by running cross validation and evaluating our learning algorithms. We have created a data set as described, and that data set should be split in order to be used to train, test, and evaluate.
 
 
 
