@@ -89,24 +89,28 @@ SVMs are becoming widely used for image classification. David et al. use SVM to 
 From a high level, our approach is to detect the remaining cups, determine which cup has a ball in it, find the X,Y, and Z coordinates of that cup in the base\_link\_frame, and remove that cup from the formation.  This involves learning what a cup looks like and planning motion to a specified point.
 
 \section{Perception}
-
+		
 The most complicated and novel part of our project is detecting which cup contains a ball.  Although this sounds simple at first, it rapidly becomes complicated when the possibilities of changing environments, lighting, cups, and viewing angles are considered.
 
 \subsection{Dataset}
 
-To assemble our dataset, we took pictures of formations of cups using the Kinect.  To make sure that our data was faithful to the data that would be gathered by the PR2, we placed the Kinect at a height and angle consistent with the PR2's technical documents.  To simulate real-world conditions, we made small adjustments to the height, angle, and position of the Kinect  In total 50 pictures were taken. 
+To assemble our dataset, we took pictures of formations of cups using the Kinect.  A cup formation is created by placing six cups in a pyramid shapes and then removing between zero and five cups.  To make sure that our data was faithful to the data that would be gathered by the PR2, we placed the Kinect at a height and angle consistent with the PR2's technical documents.  To simulate real-world conditions, we made small adjustments to the height, angle, and position of the Kinect while capturing data, all while varying the lighting conditions.  In some cup formations, one cup holds a ball; in others no cups contain balls.  In total 120 pictures were taken.
 
-\subsubsection{Algorithms}
+50 pictures were reserved for testing and 70 were used for training.  The 70 training examples were sometimes further split into training and validation groups if the particular algorithm being tested required such a split.  Before splitting the data, each picture was manually processed to isolate the cup formation.
 
 \subsubsection{Tabletop Detection}
 
-Most of our effort was expended attempting to segment the tabletop from the objects on the table.  Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball.  To solve this, we are currently in the process of overlaying the pointcloud data on the rbg image, with mixed results.
+%TODO: add citations, pictures
+
+In order to segment the tabletop from the objects on the table, we.  Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball.  To solve this, we are currently in the process of overlaying the pointcloud data on the rbg image, with mixed results.
 
 The purpose of detecting the tabletop and removing it from consideration is to isolate the pixels which form the triangle of cups.  Although the image segmentation is not fine-grained enough to detect individual cups, the task of picking out cups from the RBG image is greatly simplified when the image can be cropped to a "blob" which closely follows the cups.
 
 
 Shown here (clockwise from the right) are the registered pointcloud, the rbg image, and one result of tabletop segmentation projected onto a two dimensional image.  Tabletop segmentation returns significant clusters of points which appear above the tabletop surface.  In this case, one such cluster is the hands and keyboard of the person working at the computer.  The cluster is not yet properly aligned with the RBG image because we have not yet determined which method of coordinate transform is necessary to transform from the Kinect's 3D coordinate frame to its 2D coordinate frame.  Methods attempted include using ROS's tf, projecting the 3D coordinates on to the plane of the observer and rotating that plane, converting the pointcloud to an image directly using ROS's CloudToImage, and simply removing the Z coordinate of each point (most successful, pictured).
 
+
+\subsubsection{Algorithms}
 
 \subsubsection{Cup Detection}
 
