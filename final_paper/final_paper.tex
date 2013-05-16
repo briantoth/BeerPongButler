@@ -60,7 +60,7 @@ CS 4758 Robot Learning: Beer Pong Butler
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 
-This paper describes the application of the PR2 robot as a ''Beer Pong Butler", which will identify a ping pong ball in a cup, pick up that cup, and move it to another location. We utilize Hough’s circle detection using OpenCV and an SVM to detect a ball in a cup. We then use motion planning to perform the task given the location of the cup containing a ball.
+This paper describes the application of the PR2 robot as a ''Beer Pong Butler", which will identify a ping pong ball in a cup, pick up that cup, and move it to another location. We utilize Hough circle detection using OpenCV and an SVM to detect a ball in a cup. We then use motion planning to perform the task given the location of the cup containing a ball.
 
 \end{abstract}
 
@@ -68,9 +68,9 @@ This paper describes the application of the PR2 robot as a ''Beer Pong Butler", 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Beer pong, also known as Beirut, is a drinking game typically played at college parties, which involves two teams of two players each throwing ping pong balls across a table with the goal of sinking a ball into a cup of beer at the other end. Figure ~\ref{fig:pongtable}, shows the typical set up for a beer pong game. For our application, we will assume a game played with six cups on each side, which will be empty for our purposes. 
+Beer pong, also known as Beirut, is a game typically played at college parties, which involves two teams of two players each throwing ping pong balls across a table with the goal of getting a ball into a cup of (root)beer at the other end. Figure ~\ref{fig:pongtable}, shows the typical set up for a beer pong game. For our application, we will assume a game played with six cups on each side, which will be empty for our purposes. 
 
-When a ball is successully thrown into a cup, that cup must be removed from the game. The beer pong butler will identify the cup that contains a ball and move that cup away from play.
+When a ball is successfully thrown into a cup, that cup must be removed from the game. The beer pong butler will identify the cup that contains a ball and move that cup away from play.
 
 \begin{figure}[thpb]
       \centering
@@ -81,11 +81,11 @@ When a ball is successully thrown into a cup, that cup must be removed from the 
 
 \subsection{Related Work}
 
-Willow Garage has implemented a PR2 which responds to a "Beer Me" app that allows users to request a beer be brought to them from the fridge. The PR2 navigates to the fridge, uses handle recognition to open the door, and object recognition to determine which beers are in a rack in the fridge. The fridge is modeled using live perception and data from several sources according to a representative from Willow Garage. The PR2  uses motion planning, presumably some type of inverse kinematic solver, to determine the path of the arm to the beer to be picked up.The PR2 is also capable of opening the beer bottle. This algorithm provides the makings of a full service party bot, and our application attempts to provide additional functionality.  
+Willow Garage has implemented a PR2 which responds to a "Beer Me" app that allows users to request a beer be brought to them from the fridge. The PR2 navigates to the fridge, uses handle recognition to open the door, and object recognition to determine which beers are in a rack in the fridge. The fridge is modelled using live perception and data from several sources according to a representative from Willow Garage. The PR2  uses motion planning, presumably some type of inverse kinematic solver, to determine the path of the arm to the beer to be picked up.The PR2 is also capable of opening the beer bottle. This algorithm provides the makings of a full service party bot, and our application attempts to provide additional functionality.  
 
-Solem’s Vision Blog explains how to use Hough’s transforms and OpenCV to detect lines and circles on an image of a guage. HoughCircles is a documented function in python which takes as input: the image, the detection method to use, the inverse ratio of the accumulation resolution to the image resolution, minimum distance between the centers of the detected circles, two threshold values, and the minimum and maximum radii. These parameters must be tweaked for different applications.
+Solem’s Vision Blog explains how to use Hough transforms and OpenCV to detect lines and circles on an image of a guage. HoughCircles is a documented function which takes the image, the detection method to use, the inverse ratio of the accumulation resolution to the image resolution, minimum distance between the centers of the detected circles, two threshold values, and the minimum and maximum radii. These parameters must be tweaked for different applications.
 
-SVMs are becoming widely used for image classification. David et al. use SVM to genetic syndrome diagnosis which requires image classigication. The results shown in Table 6 of their report shows a comparison between the error rates of the SVM to other machine learning algorithms including 7-nearest neighbor, neural network, and naive bayes. The results show that SVM has the lowest error rate of the compared algorithms. Anthony et al. use SVM for land cover mapping. Their results show high accuracy using both one-versus-one and one-versus-all approaches, and they conclude that the choice between the two methods for image classification is simply personal preference.
+SVMs are becoming widely used for image classification. David et al. use SVM to genetic syndrome diagnosis which requires image classification. The results shown in Table 6 of their report shows a comparison between the error rates of the SVM to other machine learning algorithms including 7-nearest neighbor, neural network, and naive Bayes. The results show that SVM has the lowest error rate of the compared algorithms. Anthony et al. use SVM for land cover mapping. Their results show high accuracy using both one-versus-one and one-versus-all approaches, and they conclude that the choice between the two methods for image classification is simply personal preference.
 
 From a high level, our approach is to detect the remaining cups, determine which cup has a ball in it, find the X,Y, and Z coordinates of that cup in the base\_link\_frame, and remove that cup from the formation.  This involves learning what a cup looks like and planning motion to a specified point.
 
@@ -103,7 +103,7 @@ To assemble our dataset, we took pictures of formations of cups using the Kinect
 
 %TODO: add citations, pictures
 
-In order to segment the tabletop from the objects on the table, we used an existing table segmentation package.  For example, we segment the hands and keyboard from the table in Figure~\ref{fig:rgb}. Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball as shown by Figure~\ref{fig:point}.  To solve this, we overlay the segmented pointcloud data on the rgb image in order to isolate the portion of the rgb image that contains the cup formation, Figure~\ref{fig:point_rgb}.  This allows us to use the superior pixel density of the RGB image to determine which cup contains the ball but provides an easy way to discard most of the image.
+In order to segment the tabletop from the objects on the table, we used an existing table segmentation package.  For example, we segment the hands and keyboard from the table in Figure~\ref{fig:rgb}. Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball as shown by Figure~\ref{fig:point}.  To solve this, we overlay the segmented pointcloud data on the RGB image in order to isolate the portion of the RGB image that contains the cup formation, Figure~\ref{fig:point_rgb}.  This allows us to use the superior pixel density of the RGB image to determine which cup contains the ball but provides an easy way to discard most of the image.
 
 \begin{figure}[thpb]
       \centering
