@@ -94,56 +94,79 @@ The most complicated and novel part of our project is detecting which cup contai
 
 \subsection{Dataset}
 
-To assemble our dataset, we took pictures of formations of cups using the Kinect.  A cup formation is created by placing six cups in a pyramid shapes and then removing between zero and five cups.  To make sure that our data was faithful to the data that would be gathered by the PR2, we placed the Kinect at a height and angle consistent with the PR2's technical documents.  To simulate real-world conditions, we made small adjustments to the height, angle, and position of the Kinect while capturing data, all while varying the lighting conditions.  In some cup formations, one cup holds a ball; in others no cups contain balls.  In total 120 pictures were taken.
+To assemble our dataset, we took pictures of formations of cups using the Kinect.  A cup formation is created by placing six cups in a pyramid shapes and then removing between zero and five cups.  To make sure that our data was faithful to the data that would be gathered by the PR2, we placed the Kinect at a height and angle consistent with the PR2's technical documents.  To simulate real-world conditions, we made small adjustments to the height, angle, and position of the Kinect while capturing data, all while varying the lighting conditions.  In some cup formations, one cup holds a ball; in others no cups contain balls.  In total 120 pictures were taken.  Each of these pictures was labelled with a coordinate pair corresponding to the approximate center of the cup which contained the ball (if no ball was present, the pair (-1,-1) was used).  The center of the cup was used, because this would be the ideal point for the robot hand to enter the cup.
 
 50 pictures were reserved for testing and 70 were used for training.  The 70 training examples were sometimes further split into training and validation groups if the particular algorithm being tested required such a split.  Before splitting the data, each picture was manually processed to isolate the cup formation.
 
-\subsubsection{Tabletop Detection}
+\subsection{Tabletop Detection}
 
 %TODO: add citations, pictures
 
-In order to segment the tabletop from the objects on the table, we.  Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball.  To solve this, we are currently in the process of overlaying the pointcloud data on the rbg image, with mixed results.
+In order to segment the tabletop from the objects on the table, we used an existing table segmentation package.  Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball.  To solve this, we overlay the segmented pointcloud data on the rgb image in order to isolate the portion of the rgb image that contains the cup formation.  This allows us to use the superior pixel density of the RGB image to determine which cup contains the ball but provides an easy way to discard most of the image.
 
-The purpose of detecting the tabletop and removing it from consideration is to isolate the pixels which form the triangle of cups.  Although the image segmentation is not fine-grained enough to detect individual cups, the task of picking out cups from the RBG image is greatly simplified when the image can be cropped to a "blob" which closely follows the cups.
+The purpose of detecting the tabletop and removing it from consideration is to isolate the pixels which form the triangle of cups.  Although the image segmentation is not fine-grained enough to detect individual cups, the task of picking out cups from the RGB image is greatly simplified when the image can be cropped to a "blob" which closely follows the cups.
 
+%TODO: update this later if we end up taking a picture
+Shown here (clockwise from the right) are the registered pointcloud, the RGB image, and one result of tabletop segmentation projected onto a two dimensional image.  Tabletop segmentation returns significant clusters of points which appear above the tabletop surface.  In this case, one such cluster is the hands and keyboard of the person working at the computer.  The cluster is not yet properly aligned with the RBG image because we have not yet determined which method of coordinate transform is necessary to transform from the Kinect's 3D coordinate frame to its 2D coordinate frame.  Methods attempted include using ROS's tf, projecting the 3D coordinates on to the plane of the observer and rotating that plane, converting the pointcloud to an image directly using ROS's CloudToImage, and simply removing the Z coordinate of each point (most successful, pictured).
 
-Shown here (clockwise from the right) are the registered pointcloud, the rbg image, and one result of tabletop segmentation projected onto a two dimensional image.  Tabletop segmentation returns significant clusters of points which appear above the tabletop surface.  In this case, one such cluster is the hands and keyboard of the person working at the computer.  The cluster is not yet properly aligned with the RBG image because we have not yet determined which method of coordinate transform is necessary to transform from the Kinect's 3D coordinate frame to its 2D coordinate frame.  Methods attempted include using ROS's tf, projecting the 3D coordinates on to the plane of the observer and rotating that plane, converting the pointcloud to an image directly using ROS's CloudToImage, and simply removing the Z coordinate of each point (most successful, pictured).
+%TODO: use present tense
 
+\subsection{Hough Circles}
 
-\subsubsection{Algorithms}
+%TODO: put pictures of good and bad hough circles here
+%http://opencv.willowgarage.com/documentation/cpp/imgproc_feature_detection.html
+%http://www.janeriksolem.net/2012/08/reading-gauges-detecting-lines-and.html
+The second step in our filtering pipeline is the detection of individual cups.  Although table segmentation provides a blob which contains the cup formation, this blob also includes many unnecessary pixels which can be confusing to the ball detection algorithm.  In order to further narrow our search, we use OpenCV's Hough circles to exploit the geometry of the cups.  
 
-\subsubsection{Cup Detection}
+Unfortunately, slightly varying the parameters for the Hough circles function results in the generation of wildly different circles.  Specifically the \emph{minDist} (minimum distance between the centers of detected circles), \emph{minRadius} (minimum radius of the detected circles), and \emph{maxRadius} (maximum radius of the detected circles) are difficult to tune by hand, because they are so dependent on the exact position and angle of the Kinect sensor.  Attempts to make these parameters simple functions of the size of the image failed to capture the relatively small variances in our dataset.  Even when tuned correctly, the circle detector frequently recognizes the shadow of a cup as a circle and ignores furthest cup because the aperture of that cup appears to be an oval from the camera's perspective.
 
-We considered a number of alternatives for using machine learning to bolster perception.  Although openCV’s Hough Circles do a good job of delimiting cups when properly tuned, as shown in Figure ~\ref{fig:positive}, they can perform erratically when the parameters are a bit off.  Slight changes in environment, lighting, height, or angle can result in incorrect or incomplete labeling of cups as seen in Figure ~\ref{fig:negative}.
+It is at this point that we decided to apply machine learning in order to discriminate between the circles which represented actual cups and those which were merely random coincidences.  The Hough Circle step of the pipeline takes a brute force approach to the parameter-tuning issue and simply varies each parameter slightly in an empirically determined range.  This results in many accurate circles, but also many misses.  
 
+From our 70-image training set, we generated approximately 13,000 individual circle images by running the Hough circle function with various parameters.  Because this was far too many images for us to manually label, we selected 500 random images and labelled only these.  Circles were labeled as not a cup, a cup, or a cup containing a ball.  
+
+We considered three distinct algorithms to determine which cup (if any) contains a ball.  Although none of the algorithms performed incredibly well, the "direct ball detection" algorithm provided the best results on the testing set.
+
+Our first approach was to determine the images that were in fact images of cups, and then find which of those contained the ball. 
+
+\subsection{Cup Detection}
+
+We considered a number of alternatives for using machine learning to bolster cup perception.  Although openCV’s Hough Circles do a good job of delimiting cups when properly tuned, as shown in Figure ~\ref{fig:positive}, they can perform erratically when the parameters are a bit off.  Slight changes in environment, lighting, height, or angle can result in incorrect or incomplete labelling of cups as seen in Figure ~\ref{fig:negative}.
 
 Our first idea was to implement a combined HMM and SVM to determine whether we had properly identified the cups.  The problem naturally lends itself to an HMM, because there are a small number of discrete states (configurations of the cups), and the game naturally transitions from one state to another.  Even better, the transition probabilities are certainly not uniform and can be determined experimentally simply by throwing balls into cups.  Although we were very excited about this approach, it was abandoned due to time constraints.  Because each unique configuration would require a custom SVM to be trained, there would have to be 6+6+15+15+20+1+1= 64 different SVMs.  Gathering sufficient data to train and validate this many SVMs would not be practical.
 
-Instead, we are pursuing three different, simpler classifiers which will be compared against our dataset to determine which performs the best.  The ultimate evaluation is the ability to detect if the ball is present and, if it is, where it is located.
+\subsubsection{SVM-based Cup Detection}
 
-The simplest classifier simply looks to determine, for each drawn circle, if that circle represents a valid cup.  Therefore this classifier considers only one cup at a time.  Features include the radius of the circle and the average color of pixels in the circle.  The number of detected cups (and the probability of each circle being a cup) is fed into a simple HMM.  Unlike the HMM mentioned previously, this HMM contains only six states, one for each possible total number of cups.  At each time update, the HMM can either transition to the next state (remove a cup) or keep the same number of cups.  This is used as a sanity check for the circle detector; if the identified number of cups is not equal to the expected number of cups or one fewer than the detector is re-run with different parameters.
+%add sample feature vector and citation and graph maybe?
+The simplest cup classifier simply looks to determine, for each drawn circle, if that circle represents a valid cup.  Therefore this classifier considers only one cup at a time.  The features (all drawn from the input image) are the width, height, number of pixels, the average red value of the pixels, the average green value of the pixels, and the average blue value of the pixels.  These features represent a simple intuitive grouping of the parameters used to describe a picture.  
 
-The second classifier takes a slightly different approach by considering all of the detected cups at once. Adding the number of cups detected and the number of cups expected as features along with color data for each cup, allows the entire set of circles to be accepted or rejected at once.  This increases the amount of information which can be learned, but has the disadvantage of requiring more guesswork during training (we have to make assumptions about the expected number of cups).
+We used SVMLight to train a classifier using this information.  First the training data (the 500 labelled circle images) was normalized so that the classifier would not be inherently biased.  An extreme example of this would be a training set composed of 90\% positive and 10\% negative examples; the classifier could simply label everything as positive and achieve 90\% accuracy!  Our labelled images contained 203 negative examples and 297 positive examples, so we used 203 of each.  These 406 images were shuffled and split into five groups.  Using these groups we performed five-fold cross-validation in order to determine the best trade-off between training error and margin (c value) for the classifier.  With the appropriate c value selected, the final classifier was trained using all 406 examples.
+%TODO: show some results here
 
-The final classifier goes even further in attempting to consider the entire formation of cups by adding additional features to represent the implicit information in the HMM model.  The first six features represent the “best fit” that the Hough Circle detector can perform given the circles it finds.  Currently the assignment of numbers to cups is done by comparing to the initial 6 cup pyramid.  This makes the assumption that the robot does not significantly move during the course of the game; we are also pursuing an ‘absolute’ model based on coordinates.
-    
-The information from the “previous state” is incorporated in features 26-31.  Assuming the robot successfully removed a cup in the previous iteration and all of the circles were detected properly, this will match features 1-6 exactly.
+This classifier determines which circles (generated by the Hough circle function) qualify as cups, but it does not solve the problem of determining which cup contains the ball.  This is performed by a simple scan of the cups for orange pixels.  This process introduced another parameter to tune; the cutoff for the minimum number of orange pixels that could qualify as a cup (recall that some configurations of balls contain one ball and others contain none).  To select the proper value for this parameter, the training set (70 images of between one and six cups, sometimes containing a ball) was evaluated using a number of different parameter values.  Each image in the training set was manually labelled with a point indicating the approximate center of the cup containing the ball (for cup formations not containing a ball (-1,-1) was used).  For each of these images, the Hough circles function was used to generate a number of circle images.  Then the classifier was applied to find the circles which corresponded to cups.  The number of orange pixels in each of the cups was counted, and the cup which contained the largest number of orange pixels was selected.  If the number of pixels present was greater than the threshold, the classifier predicted a ball at that location.  If not, then the classifier predicted no ball in the formation.  After repeating this process for each parameter value, the value which generated the greatest accuracy was selected.
+%ROC curve
 
-The other features are currently experimental attempts to characterize a cup.  This SVM is really doing double-duty; it requires both the detection of the correct number of cups in the correct relative positions and that the circles detected are actually cups.  At present we average the rbg values of the pixels within the cup-circles.\\\\
-Features: 
-$1 \rightarrow 6$: did the cup detector find cup x. \\
-$7 \rightarrow 25$: average rgb values for cups\\
-$26 \rightarrow 31$: was the cup there (i.e. should the cup detector have found cup x)\\
+\subsubsection{SURF-based Cup Detection}
 
-Sample feature vector:\\
+The second classifier also attempts to identify individual cups, but took a very different approach to the process.  SURF (Speed Up Robust Features) was used to categorize circles as either cups or not.  Because SURF works by identifying keypoints in an image, computing the descriptors for those keypoints, and then comparing those descriptors to the descriptors calculate from the keypoints of another image, it is most similar to KNN.  In order to leverage the previously-labelled dataset, we created a classifier that takes a circle image and computes its similarity to a collection of known cup images using SURF.  The smallest 'distance' found this way is chosen to represent the image.  As before, another parameter is introduced: the largest acceptable 'distance' which still qualifies a circle image as a cup.  Once again, this parameter was varied to determine the best value to use.  In order to avoid contaminating the results, five-fold cross-validation was used.  The 297 positive examples were split into five groups.  For each of these five groups, the other four groups were used as the database of known cup images.  The leftover group was combined with an equal number of randomly selected negative images (approximately 60 of them) and run through the classifier.  As above, the accuracy of the classifier was determined for various threshold values, and the results were averaged across all five splits.  The final classifier used the best threshold value, as well as a known cup database consisting of all 297 labelled positive examples.
 
-$1  <1:0 2:1 3:0 4:0 5:0 6:0 7:146.605410924 8:121.33146163 9:135.208269525 .... 26:0 27:1 28:0 29:0 30:0 31:0>$ \\
+As with the previous classifier, the second classifier only handles the task of task of determining which circles contain cups.  The same approach described two paragraphs above was used to translate this into a classifier that can determine which cups contains a ball.
 
+\subsubsection{Ball Detection in Unfiltered Circles}
 
-All of the above use the same method to actually find the ball.  Each identified cup is passed to another SVM which is specifically trained to identify the cup which has the ball.  The features for this SVM are the average color for the cup and the number of orange-like pixels.  This process is separate from the task of actually finding cups, because, until the entire formation is identified, there is little point in searching for the ball.
+Since both of the above methods simply add a layer of abstraction on top of simple ball detection, it made sense to try the ball detection 
+
+\subsection{Direct Ball Detection}
+
+\subsubsection{SVM-based Ball Detection}
+
+After attempting to first find the circles that contain cups and then determine from among those the cup which contains the ball, we realized that it might be more effective to simply use a classifier to find the ball directly. After all, the Hough circles already did much of the work in separating the cups from the rest of the image, and adding the additional requirement that an image had to contain a ball to be a positive example added the possibility for new features.  Specifically we added an 
+
+\subsubsection{SURF-based Ball Detection}
+
+We also attempted to perform direct ball detection using SURF.  However, this failed due to the incredibly small size of the ball images (typically 34x34 pixels).  OpenCV's SURF function simply failed to find keypoints on these images.
 
 \subsection{Results}
-\newpage
+
 \section{Motion Planning}
 
 The overall goal of the motion planning is to remove the cup, which was determined to contain a ball, from the cup arrangement. To accomplish this goal,  a model of the situation was created in gazebo and inverse kinematics were used to plan the right arm's path. The motion plan assumes that the PR2 is positioned in front of the cup arrangement as shown in Figure~\ref{fig:start} with its arms positioned straight in front of the PR2 body and the grippers pointed upwards at an angle. The motion plan uses only the right arm of the PR2 to complete the goals.
