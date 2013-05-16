@@ -102,7 +102,28 @@ To assemble our dataset, we took pictures of formations of cups using the Kinect
 
 %TODO: add citations, pictures
 
-In order to segment the tabletop from the objects on the table, we used an existing table segmentation package.  Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball.  To solve this, we overlay the segmented pointcloud data on the rgb image in order to isolate the portion of the rgb image that contains the cup formation.  This allows us to use the superior pixel density of the RGB image to determine which cup contains the ball but provides an easy way to discard most of the image.
+In order to segment the tabletop from the objects on the table, we used an existing table segmentation package.  For example, we segment the hands and keyboard from the table in Figure~\ref{fig:rgb}. Although we were successful in doing so, the resulting pointcloud was not dense enough to actually determine which cup contained the ball as shown by Figure~\ref{fig:point}.  To solve this, we overlay the segmented pointcloud data on the rgb image in order to isolate the portion of the rgb image that contains the cup formation, Figure~\ref{fig:point_rgb}.  This allows us to use the superior pixel density of the RGB image to determine which cup contains the ball but provides an easy way to discard most of the image.
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.5]{rgb}
+      \caption{RGB image taken with Kinect}
+      \label{fig:rgb}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.5]{point}
+      \caption{Point cloud data}
+      \label{fig:point}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.5]{point_rgb}
+      \caption{Point cloud data overlayed on RGB image}
+      \label{fig:point_rgb}
+\end{figure}
 
 The purpose of detecting the tabletop and removing it from consideration is to isolate the pixels which form the triangle of cups.  Although the image segmentation is not fine-grained enough to detect individual cups, the task of picking out cups from the RGB image is greatly simplified when the image can be cropped to a "blob" which closely follows the cups.
 
@@ -122,7 +143,30 @@ Unfortunately, slightly varying the parameters for the Hough circles function re
 
 It is at this point that we decided to apply machine learning in order to discriminate between the circles which represented actual cups and those which were merely random coincidences.  The Hough Circle step of the pipeline takes a brute force approach to the parameter-tuning issue and simply varies each parameter slightly in an empirically determined range.  This results in many accurate circles, but also many misses.  
 
-From our 70-image training set, we generated approximately 13,000 individual circle images by running the Hough circle function with various parameters.  Because this was far too many images for us to manually label, we selected 500 random images and labelled only these.  Circles were labeled as not a cup, a cup, or a cup containing a ball.  
+From our 70-image training set, we generated approximately 13,000 individual circle images by running the Hough circle function with various parameters.  Because this was far too many images for us to manually label, we selected 500 random images and labelled only these.  Circles were labeled as not a cup, Figure~\ref{fig:not_cup}, a cup, Figure~\ref{fig:cup}, or a cup containing a ball, Figure~\ref{fig:ball}.  
+
+
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =1]{single3}
+      \caption{Individual circle without a cup}
+      \label{fig:not_cup}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.8]{single2}
+      \caption{Individual circle with a cup}
+      \label{fig:cup}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =1]{single1}
+      \caption{Individual circle with a ball}
+      \label{fig:ball}
+\end{figure}
 
 We considered three distinct algorithms to determine which cup (if any) contains a ball.  Although none of the algorithms performed incredibly well, the "direct ball detection" algorithm provided the best results on the testing set.
 
@@ -130,7 +174,21 @@ Our first approach was to determine the images that were in fact images of cups,
 
 \subsection{Cup Detection}
 
-We considered a number of alternatives for using machine learning to bolster cup perception.  Although openCV’s Hough Circles do a good job of delimiting cups when properly tuned, as shown in Figure ~\ref{fig:positive}, they can perform erratically when the parameters are a bit off.  Slight changes in environment, lighting, height, or angle can result in incorrect or incomplete labelling of cups as seen in Figure ~\ref{fig:negative}.
+We considered a number of alternatives for using machine learning to bolster cup perception.  Although openCV’s Hough Circles do a good job of delimiting cups when properly tuned, as shown in Figure ~\ref{fig:bad}, they can perform erratically when the parameters are a bit off.  Slight changes in environment, lighting, height, or angle can result in incorrect or incomplete labelling of cups as seen in Figure ~\ref{fig:good}.
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.5]{good}
+      \caption{Good Hough Circles}
+      \label{fig:good}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.5]{bad}
+      \caption{Bad Hough Circles}
+      \label{fig:bad}
+\end{figure}
 
 Our first idea was to implement a combined HMM and SVM to determine whether we had properly identified the cups.  The problem naturally lends itself to an HMM, because there are a small number of discrete states (configurations of the cups), and the game naturally transitions from one state to another.  Even better, the transition probabilities are certainly not uniform and can be determined experimentally simply by throwing balls into cups.  Although we were very excited about this approach, it was abandoned due to time constraints.  Because each unique configuration would require a custom SVM to be trained, there would have to be 6+6+15+15+20+1+1= 64 different SVMs.  Gathering sufficient data to train and validate this many SVMs would not be practical.
 
@@ -139,8 +197,14 @@ Our first idea was to implement a combined HMM and SVM to determine whether we h
 %add sample feature vector and citation and graph maybe?
 The simplest cup classifier simply looks to determine, for each drawn circle, if that circle represents a valid cup.  Therefore this classifier considers only one cup at a time.  The features (all drawn from the input image) are the width, height, number of pixels, the average red value of the pixels, the average green value of the pixels, and the average blue value of the pixels.  These features represent a simple intuitive grouping of the parameters used to describe a picture.  
 
-We used SVMLight to train a classifier using this information.  First the training data (the 500 labelled circle images) was normalized so that the classifier would not be inherently biased.  An extreme example of this would be a training set composed of 90\% positive and 10\% negative examples; the classifier could simply label everything as positive and achieve 90\% accuracy!  Our labelled images contained 203 negative examples and 297 positive examples, so we used 203 of each.  These 406 images were shuffled and split into five groups.  Using these groups we performed five-fold cross-validation in order to determine the best trade-off between training error and margin (c value) for the classifier.  With the appropriate c value selected, the final classifier was trained using all 406 examples.
+We used SVMLight to train a classifier using this information.  First the training data (the 500 labelled circle images) was normalized so that the classifier would not be inherently biased.  An extreme example of this would be a training set composed of 90\% positive and 10\% negative examples; the classifier could simply label everything as positive and achieve 90\% accuracy!  Our labelled images contained 203 negative examples and 297 positive examples, so we used 203 of each.  These 406 images were shuffled and split into five groups.  Using these groups we performed five-fold cross-validation in order to determine the best trade-off between training error and margin (c value) for the classifier as shown in Figure~\ref{fig:cvalue}.  With the appropriate c value selected, the final classifier was trained using all 406 examples.
 %TODO: show some results here
+\begin{figure}[thpb]
+      \centering
+	  \includegraphics[scale =0.3]{cvalue}
+      \caption{Cup Detection Performance}
+      \label{fig:cvalue}
+\end{figure}
 
 This classifier determines which circles (generated by the Hough circle function) qualify as cups, but it does not solve the problem of determining which cup contains the ball.  This is performed by a simple scan of the cups for orange pixels.  This process introduced another parameter to tune; the cutoff for the minimum number of orange pixels that could qualify as a cup (recall that some configurations of balls contain one ball and others contain none).  To select the proper value for this parameter, the training set (70 images of between one and six cups, sometimes containing a ball) was evaluated using a number of different parameter values.  Each image in the training set was manually labelled with a point indicating the approximate center of the cup containing the ball (for cup formations not containing a ball (-1,-1) was used).  For each of these images, the Hough circles function was used to generate a number of circle images.  Then the classifier was applied to find the circles which corresponded to cups.  The number of orange pixels in each of the cups was counted, and the cup which contained the largest number of orange pixels was selected.  If the number of pixels present was greater than the threshold, the classifier predicted a ball at that location.  If not, then the classifier predicted no ball in the formation.  After repeating this process for each parameter value, the value which generated the greatest accuracy was selected.
 
@@ -212,7 +276,7 @@ The cup objects were spawned into the gazebo world using the following coordinat
 
 \begin{figure}[thpb]
       \centering
-	  \includegraphics[scale =0.2]{cups}
+	  \includegraphics[scale =0.3]{cups}
       \caption{Cup arrangement in gazebo}
       \label{fig:cups}
 \end{figure}
@@ -249,7 +313,7 @@ After the same movements were confirmed to possible with the table in gazebo, cu
 
 \begin{figure}[thpb]
       \centering
-	  \includegraphics[scale =0.2]{dumb}
+	  \includegraphics[scale =0.3]{dumb}
       \caption{Effects of too small of a collision map}
       \label{fig:dumb}
 \end{figure}
@@ -259,7 +323,7 @@ Finally, the motion plan was executed in simulation with the full cup arrangemen
 The PR2 first moves the gripper over the cup which will be moved as seen in Figure~\ref{fig:over}. Next the gripper would be spread to secure the cup in the real world scenario.
 \begin{figure}[thpb]
       \centering
-	  \includegraphics[scale =0.2]{gripper_over_cup}
+	  \includegraphics[scale =0.3]{gripper_over_cup}
       \caption{PR2 gripper over cup 1}
       \label{fig:over}
 \end{figure}
@@ -268,7 +332,7 @@ Finally, the PR2 moves the gripper away from the robot while maintaining control
 
 \begin{figure}[thpb]
       \centering
-	  \includegraphics[scale =0.2]{gripper_away}
+	  \includegraphics[scale =0.3]{gripper_away}
       \caption{PR2 gripper moved away from arrangement}
       \label{fig:away}
 \end{figure}
