@@ -350,7 +350,7 @@ We began by working with pick and place, but this algorithm does not work for ou
 
 The problem of identifying a ball in a formation of cups proved to be surprisingly difficult.  Small changes in angle, lighting, and arrangement confounded naive approaches.  Furthermore, the presence of random objects made the challenge even greater.  Even after isolating the cup formation using tabletop segmentation and singling out likely areas using a Hough circle function, our best classifier only achieved 83\% accuracy on our test set.  The classifiers we tried, in order of accuracy on the test set, were ball detection on unfiltered circles, SURF cup classification, SVM cup classification, and SVM direct ball classification.  Our hope is that a real robot would be able to adjust its position and the angle of the Kinect slightly in order to gather multiple images and make a more informed decision about the presence of a ball.
 
-
+The motion planning was mostly successful given that it was entirely run in the simulator. The inverse kinematics solver was sufficient to move the gripper to the designated cup in the correct orientation and then away from the cup arrangement. However, without the real robot we were unable to complete the gripping action. We are confident however that with the real robot the gripping method selected would be successful.
 
 \begin{thebibliography}{99}
 
